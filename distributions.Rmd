@@ -1,0 +1,211 @@
+---
+title: "Distributions and Their Uses"
+author: "Kevin Glass"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(scipen = 999)
+```
+
+``` {r echo=FALSE}
+EXAMPLE = FALSE
+
+library(ggplot2)
+```
+
+# Overview
+
+
+# Preliminaries
+
+<!-- In this project you will investigate the exponential distribution in R and compare it with the Central Limit Theorem. -->
+
+<!-- The distribution of averages of iid random variables becomes that of a standard normal as the sample size increases -->
+
+**Exponential Distribution**
+
+The exponential distribution is defined by the function
+
+\[f(x) = \{
+  \begin{array}{ c l }
+    \lambda e^{-\lambda x} & \quad \textrm{if } x \geq 0 \\
+    0                 & \quad \textrm{if } x < 0
+  \end{array}\]
+  
+where the rate parameter $\lambda$ is the mean number of events over a given time period^[https://en.wikipedia.org/wiki/Exponential_distribution]. 
+
+The expectation value of an exponential distribution is
+
+\[E[X] = \int _{0}^{\infty} x \lambda e^{-\lambda x}dx = \lambda \int _{0}^{\infty} x  e^{-\lambda x}dx\].
+
+Using integration by parts, set $u = x$, $du  = dx$, $dv = e^{-\lambda x} dx$, and $v = -\frac {1}{\lambda}e^{-\lambda x}$, the integral becomes, 
+
+\[E[X] = \lambda \bigg [ -\frac {x}{\lambda}  e^{-\lambda x} \bigg |_{0}^{\infty} - \int_{0}^{\infty} \bigg( -\frac {1}{\lambda}\bigg) e^{-\lambda x} dx  \bigg ]  = \lambda \bigg [  -\frac {x}{\lambda} e^{-\lambda x} \bigg |_{0}^{\infty} + \frac {1}{\lambda}\int_{0}^{\infty} e^{-\lambda x} dx \bigg ]\]
+
+\[E[X] = \lambda \bigg [  -\frac {x}{\lambda} e^{-\lambda x}   - \frac {1}{\lambda^2} e^{-\lambda x} dx \bigg ]_{0}^{\infty} = \lambda \bigg [  \frac{-\infty}{\lambda} e^{-\lambda \infty} -\lambda e^{-\lambda \infty} - \bigg(-\frac{0}{\lambda}e^{-\lambda 0} -\frac {1}{\lambda^2} e^{-\lambda 0}\bigg) \bigg] = \lambda \frac{1}{\lambda^2} = \frac{1}{\lambda}\] 
+
+The expectation value the variance of an exponential distribution is
+
+$Var(\overline{X}) = E[X^2] - E[X]^2$
+
+\[E[X]^2 = \frac{1}{\lambda^2}\] 
+\[E[X^2] =\lambda \int_0^\infty  x^2e^{-\lambda x}dx = \lambda\bigg [ - \frac{x^2}{\lambda}e^{-\lambda x} \bigg|_{0}^{\infty}  -\int_{0}^{\infty} 2x \bigg(-\frac {1}{\lambda}x e^{-\lambda x} \bigg)\bigg]\]
+\[E[X^2] = \lambda\bigg [ - \frac{x^2}{\lambda}e^{-\lambda x} \bigg]_{0}^{\infty} - \bigg( \bigg [ -  \frac{2x}{\lambda^2}e^{-\lambda x} \bigg]_{0}^{\infty}  -\int_{0}^{\infty} -\frac {2}{\lambda^2} e^{-\lambda x} dx\bigg)\]
+
+
+**Central Limit Theorem**
+
+The Central Limit Theorem (CLT) says given a population, and a selection of n observations of the population $X_{1}, X_{2}, ..., X_{n}$ then, as $n \to \infty$ the distribution of $\frac {\overline{X}- \mu}{\sigma/\sqrt{n}}$, where $\overline{X}$ is the mean and $\sigma$ is the standard deviation of the population approaches a normal distribution, $N(\mu, \sigma^2)$.
+
+As the sample size (n) increases, the standard deviation of the sampling distribution becomes smaller because the square root of the sample size is in the denominator. In other words, the sampling distribution clusters more tightly around the mean as sample size increases.
+
+
+
+# Project 6, part 1: A simulation exercise
+
+The previous section showed that the mean and variance of the exponential function are $1/\lambda$ and $1/\lambda^2$ respectively. This means the Central Limit Theorem 
+,
+
+```{r echo=FALSE}
+# In this project you will investigate the exponential distribution in R and 
+# compare it with the Central Limit Theorem.
+# mean and std of the distribution is 1/lambda
+
+# Requirements
+# 1. Show sample mean and compare to theoretical mean
+# 2. Show how variable the sample is (via variance) and compare it to the 
+#    theoretical variance of the distribution.
+# 3. Show that the distribution is approximately normal.
+#    1. focus on the difference between the distribution of a large collection 
+#       of random exponentials and the distribution of a large collection of 
+#       averages of 40 exponentials.
+
+# You will investigate the distribution of averages of 40 exponentials. 
+# Note that you will need to do a thousand simulations.
+
+if (!EXAMPLE)
+{
+  distribution <- list()
+  nSamples     <- 40                   # required
+  sampleSet    <- c(10, 20, 30, 40, 50, 60, 70, 80, 90, 
+                    100, 200, 300, 400, 500, 600, 700, 800, 900,
+                    1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000,
+                    10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000,
+                    90000, 100000)     # required
+  meanSet      <- c(1, 19, 37)
+  graphSet     <- c(10, 100, 1000, 10000, 100000)     # required
+  lambda       <- 0.2                  # required
+  i = 1
+
+  for (sample in sampleSet) {
+    # create a matrix of sample columns and nSamples rows and fill with random exponential
+    distribution[[i]] <- matrix(rexp(sample*nSamples, lambda), nrow = nSamples, ncol = sample)
+    i = i + 1
+  }
+  
+  
+  
+  
+  # columnMeans <- colMeans(distribution[[1]])      # from distribution
+  # meanValue   <- mean(columnMeans)
+  # sampleMeans <- append(sampleMeans, meanValue) # mean of column means
+  # distribution <- append(distribution, expDist)
+  # print(distribution[,1])
+  # print(length(distribution))
+  # print(distribution[[i]])
+
+  
+  for (value in meanSet) {
+    hist(distribution[[value]])
+  }
+  
+  sampleMeans  <- data.frame();  sampleDev    <- data.frame()
+  for (i in 1:length(sampleSet)) {
+    # sampleMeans <- rbind(sampleMeans, list(sampleSet[i], mean(colMeans(distribution[[i]]))))
+    # sampleDev   <- rbind(sampleDev, list(sampleSet[i], sd(colMeans(distribution[[i]]))))
+    columnMeans <- colMeans(distribution[[i]])
+    print("std dev")
+    if (i == 4) 
+      print(dim(distribution[[i]]))
+    sampleMeans <- rbind(sampleMeans, list(sampleSet[i], mean(columnMeans)))
+    sampleDev   <- rbind(sampleDev, list(sampleSet[i], sd(columnMeans)))
+  }
+
+  # hist(distribution[[37]])
+} ## if guard
+
+```
+
+## Sample Mean
+The sample mean is the center of mass of the observed data. 
+
+```{r echo=FALSE}
+
+if (!EXAMPLE) {
+  # names(sampleMeans)[1] <- "size"
+  # names(sampleMeans)[2] <- "mean"
+
+  names(sampleMeans) <- c("size", "mean")
+  ggplot(sampleMeans, aes(x=size, y=mean)) + geom_line() +
+    geom_hline(yintercept = 5.0) +
+    geom_vline(xintercept = 1000) +
+    scale_x_log10(breaks = graphSet, limits=c(10, 100000) )
+}
+
+# if (!EXAMPLE) {
+#   # names(sampleDev)[1] <- "size"
+#   # names(sampleDev)[2] <- "mean"
+#   names(sampleDev) <- c("size", "st_dev")
+#   ggplot(sampleDev, aes(x=size, y=st_dev)) + geom_line() +
+#     geom_hline(yintercept = 0.20) +
+#     geom_vline(xintercept = 1000) +
+#     scale_x_log10(breaks = graphSet, limits=c(10, 100000) )
+# }
+
+```
+
+
+### example
+
+```{r echo=FALSE}
+
+if (EXAMPLE) {
+#   hist(runif(1000)) 
+# 
+#   mns = NULL
+#   for (i in 1 : 1000) 
+#     mns = c(mns, mean(runif(40)))
+#   hist(mns)
+# 
+#   nrows   <- 40     # required
+#   ncols   <- 1000   # required
+#   lambda  <- 0.2    # required
+#   
+#   expDist <- matrix(rexp(nrows*ncols, 1/ lambda), nrow=nrows, ncol=ncols)
+#   
+#   columnMeans <- colMeans(expDist)      # from expDist
+#   sampleMeans <- mean(columnMeans)      # mean of column means
+# 
+#   print(paste0("Sample ", sampleMeans))
+#   print("Column ")
+#   print(columnMeans)
+
+  experiments  <- c(100, 1000, 10000)  # required
+  
+  for (experiment in experiments)
+  {
+    print(paste0("experiment = ", experiment))
+  }
+}
+
+
+```
+
+
+
+
+
+
