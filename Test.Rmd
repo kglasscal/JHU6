@@ -245,9 +245,9 @@ imageMeanDistribution <- function(sampleRepetition, sampleSize, meanDistribution
     print(paste0("binName           = ", binName))
     print(paste0("binName           = ", class(binName)))
     print(paste0("sampleSize        = ", sampleSize))
-    print("meanDistributions = ")
-    print(meanDistributions)
-    # print("Test meanDistributions separately")
+    # print("meanDistributions = ")
+    # print(meanDistributions)
+    print("Test meanDistributions separately")
   }
 
   # -----------------------------------------------------------------------------
@@ -255,42 +255,44 @@ imageMeanDistribution <- function(sampleRepetition, sampleSize, meanDistribution
   pltList <- list()
 
   for (i in 1:length(sampleRepetition)) {
-    counts <- binCounts(x = meanDistributions[[i]], 
-                             idxs = NULL, 
-                             bx   = binRange, 
-                             nbins = 0)
-    
-    frame  <- data.frame(pdf = counts, binName = binName)
-    colnames(frame) <- c("pdf", "binName")
-    # frame  <- cbind(frame, binName)
-    
+    frame <- NULL
+    counts <- binCounts(x = meanDistributions[[i]], bx = unlist(binRange))
+
+    frame  <- data.frame(pdf = meanDistributions[[i]], range = binRange[1:length(binRange)-1])
+    colnames(frame) <- c("pdf", "range")
+    # z = as.factor(unlist(binName)), pdf = counts/sampleRepetition[i] ) , name = as.factor(unlist(binName))
+  
     if(RUN_MEAN_DIST_IMG & VERIFY_MEAN_DIST_IMG & TRUE)
     {
-      print(paste0("imageMeanDistribution: counts: ", counts))
-      print(paste0("imageMeanDistribution: binRange: ", binRange))
-      print(paste0("imageMeanDistribution: binRange: ", binName))
-      print("imageMeanDistribution: frame")
+      # print(paste0("imageMeanDistribution: len counts:      ", length(counts)))
+      # print(paste0("imageMeanDistribution: len binRange:    ", length(binRange)))
+      # print(paste0("imageMeanDistribution: len binName:     ", length(binName)))
+      # print(paste0("imageMeanDistribution: len counts:      ", counts))
+      # print(paste0("imageMeanDistribution: len binName:     ", binName))
+      print("imageMeanDistribution: -------------------- frame")
       print(frame)
     }
 
-    # pltList[i] <- ggplot(frame, aes(x = pdf)) +
-    #   geom_histogram(binwidth = 0.5, fill="#000000", color="#e9ecef") #+
+    pltList[[i]] <- ggplot(frame, aes(x = pdf)) +
+      geom_histogram(binwidth = 0.5, fill="#000000", color="#e9ecef")# +
     #   # stat_function(fun = function (x)
     #   #   dnorm(x, mean =  mu, sd = sigma/sqrt(sampleSize))*25,
-    #   #   color = "green") +
-    #   # ggtitle(paste0("Sample Mean with n = ", sampleRepetition[i])) +
-    #   # scale_x_continuous(limits = c(-1, 10.0), "Mean") +
-    #   # scale_y_continuous(limits = c(-0.1, 20), "Count")
+    #   #   color = "green") + 
+    #   after_stat(density)??????breaks   = unlist(binRange)
+    #   ggtitle(paste0("Sample Mean with n = ", sampleRepetition[i])) +
+    #   scale_x_continuous(limits = c(-1, 10.0), "Mean") +
+    #   scale_y_continuous(limits = c(-0.1, 20), "Count")
+
     # plot(pltList[[1]])
-    
+
   }
 
-  # plt <- ggarrange(pltList[[1]], pltList[[2]], pltList[[3]], pltList[[4]],
-  #         labels = label,
-  #         ncol = 2, nrow = 2)
-  # 
-  # ggsave(plot = plt, width = 6.0, height = 4.0, dpi = 300,
-  #        filename = "distribution.png")
+  plt <- ggarrange(pltList[[1]], pltList[[2]], pltList[[3]], pltList[[4]],
+          labels = label,
+          ncol = 2, nrow = 2)
+
+  ggsave(plot = plt, width = 6.0, height = 4.0, dpi = 300,
+         filename = "distribution.png")
   # -----------------------------------------------------------------------------
 
 }
@@ -301,13 +303,15 @@ if(RUN_MEAN_DIST_IMG & TRUE)
   sampleSize   <- 40
   # mu           <- 1/lambda
   # var          <- mu^2/sqrt(sampleSize)
-  sampleRepetition  <- c(10, 20, 30, 40)
-  binRange          <- seq(0.0, 10.0, by = 0.5)
+  sampleRepetition  <- c(10, 20, 30, 1000)
+  binRange          <- seq(0.0, 10.0, by = 1.0)
   binName           <- list()
-  for (i in 1:length(binRange) - 1) {
+
+  for (i in 1:(length(binRange)-1)) {
+    print(paste0("[", binRange[i], ", ", binRange[i+1], ")"))
     binName <- append(binName, paste0("[", binRange[i], ", ", binRange[i+1], ")"))
   }
-  
+
   simData           <- generateSimData(sampleRepetition, sampleSize, lambda)
   meanDistributions <- calcMeanDistributions(sampleRepetition, simData)
   imageMeanDistribution(sampleRepetition, sampleSize, meanDistributions, binRange, binName)
@@ -317,7 +321,7 @@ if(RUN_MEAN_DIST_IMG & TRUE)
 
 ```
 
-\begin{wrapfigure}{r}{0.3\textwidth}
+\begin{wrapfigure}{r}{0.5\textwidth}
   \centering
     \includegraphics[width=\linewidth]{distribution.png}
 \end{wrapfigure}
