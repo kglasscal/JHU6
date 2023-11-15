@@ -80,6 +80,7 @@ library(kableExtra)
 library(ggpubr)
 library(matrixStats)
 library(data.table)
+library(sfsmisc)
 
 set.seed(2063)
 
@@ -157,7 +158,7 @@ calcMeanDistributions <- function(sampleRepetition, simData)
 
   # ----------------------------------------------------------------------------------
   meanDistributions <- list()
-  
+
   for (i in 1:length(sampleRepetition)) {
     meanDistributions[[i]]   <- colMeans(simData[[i]])
   }
@@ -177,7 +178,7 @@ if(RUN_VERIFY_MEAN_DISTRIB & TRUE)
   meanDistributions <- calcMeanDistributions(sampleRepetition, simData)
 
   print("RUN_VERIFY_MEAN_DISTRIB: meanDistributions")
-  print(meanDistributions)
+  print(sampleRepetition, meanDistributions)
 }
 
 ```
@@ -697,34 +698,93 @@ if(RUN_VERIFY_TOOTH_SUMMARY)
 
 ```{r calcAreaDelta, echo=FALSE}
 
-calcAreaDelta <- function(sampleRepetition, simData)
+
+integrateF <- function(fun, delta, lower = 0 , upper = 0, mu = 0, sigma = 0)
 {
-  if((RUN_CALCULATE_AREA_D & VERIFY_CALCULATE_AREA_D) | TRUE)
+  array <- list()
+  sum   <- 0.0
+
+  if((RUN_CALCULATE_AREA_D & VERIFY_CALCULATE_AREA_D) & FALSE)
+  {
+    print(paste0("class delta = ", class(delta)))
+    print(paste0("class mu    = ", class(mu)))
+    print(paste0("class sigma = ", class(sigma)))
+    print(paste0("pi = ", pi))
+  }
+  
+  iters <- (upper - lower)/delta
+  if (is.function(fun)) {
+    for (step in seq(lower, upper, delta)) {
+      # step <- i*delta
+      y   <- fun(step, mu, sigma)
+      sum <- sum + y*delta
+      print(paste0("step = ", step, " y = ", y, " sum = ", sum))
+    }
+  } else {
+    for (i in 1:iters){
+      # print(array[[i]]*delta)
+      sum = sum + fun[[i]]
+    }
+  }
+  if((RUN_CALCULATE_AREA_D & VERIFY_CALCULATE_AREA_D) & FALSE)
+  {
+    print("array ")
+    print(paste0("type array ", class(array)))
+    print(paste0("type array [1] ", class(array[1])))
+    print(paste0("type array [[1]] ", class(array[[1]])))
+    print(paste0("type array [[1]] ", array[[1]]))
+    print(paste0("type array [[1]] * 3 ", array[[1]] * delta))
+  }
+
+  return (sum)
+}
+
+calcAreaDelta <- function(sampleRepetition, meanDistributions, mu, sigma)
+{
+  if((RUN_CALCULATE_AREA_D & VERIFY_CALCULATE_AREA_D) & FALSE)
   {
     print("generateSimData: verify inputs")
     print(paste0("sampleRepetitions = ", sampleRepetition))
-    # print("simData = ")
-    # print(simData)
-    print("Test sim data separately")
+    print("meanDistributions = ")
+    print(meanDistributions)
+    # print("Test meanDistributions separately")
   }
 
   # ----------------------------------------------------------------------------------
-  meanDistributions <- list()
-  
+  normalF <- function(x, mu, sigma) {
+    # return(exp(-((x - mu)/ sigma)^2 / 2) / (sqrt(2*pi)*sigma))
+    return(exp(-((x - mu)/ sigma)^2 / 2) / (sqrt(2*pi)*sigma))
+  }
+
+  theoreticalArea = integrateF(normalF, 0.1, -10, 20, mu, sigma)
+  print(paste0("theoreticalArea = ", theoreticalArea))
   for (i in 1:length(sampleRepetition)) {
-    meanDistributions[[i]]   <- colMeans(simData[[i]])
+    samplePDF <- density(meanDistributions[[i]], from=0, to=9)
+    # sampleArea <- integrateF(meanDistributions[[i]], sampleRepetition[i], 0, 10)
+    # print(paste0("sampleArea[", i, "]", sampleArea))
   }
   # ----------------------------------------------------------------------------------
- 
+
   return (meanDistributions)
 }
 
 if(RUN_CALCULATE_AREA_D)
 {
+  sampleSize   <- 40
+  sampleRepetition  <- c(10, 20, 30, 40)
+  lambda       <- 0.2
+  mu           <- 1/lambda
+  sigma        <- mu
 
+  simData           <- generateSimData(sampleRepetition, sampleSize, lambda)
+  meanDistributions <- calcMeanDistributions(sampleRepetition, simData)
 
-  calcAreaDelta(sampleRepetition, simData)
+  calcAreaDelta(sampleRepetition, meanDistributions, mu, sigma)
+
+  print("RUN_CALCULATE_AREA_D")
+
 }
+
 
 ```
 
