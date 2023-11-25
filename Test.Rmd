@@ -36,7 +36,7 @@ RUN_SIM_VERIFY     = FALSE    # run verification tests
 
 # Verify the mean column data is stored as a list of lists.
 VERIFY_MEAN_DISTRIB_FILE  = FALSE
-VERIFY_MEAN_DISTRIB_SCR   = FALSE
+VERIFY_MEAN_DISTRIB_SCR   = TRUE
 RUN_VERIFY_MEAN_DISTRIB   = FALSE
 
 # Verify the simulation data 
@@ -45,8 +45,8 @@ VERIFY_SAMPLE_STATS_SCR   = FALSE
 RUN_VERIFY_STATS          = FALSE
 
 # Verify the mean distribution images 
-VERIFY_MEAN_DIST_IMG      = FALSE
-RUN_MEAN_DIST_IMG         = FALSE
+VERIFY_MEAN_DIST_IMG      = TRUE
+RUN_MEAN_DIST_IMG         = TRUE
 
 # Verify the mean convergence image 
 VERIFY_CONVERGE_IMG       = FALSE
@@ -69,8 +69,8 @@ VERIFY_TOOTH_SUMMARY      = FALSE
 RUN_VERIFY_TOOTH_SUMMARY  = FALSE
 
 # Verify the convergence table 
-RUN_CALCULATE_AREA_D      = TRUE
-VERIFY_CALCULATE_AREA_D   = TRUE
+RUN_CALCULATE_AREA_D      = FALSE
+VERIFY_CALCULATE_AREA_D   = FALSE
 
 library(dplyr)
 library(ggplot2)
@@ -94,7 +94,7 @@ set.seed(2063)
 
 generateSimData <- function(sampleRepetition, sampleSize, lambda)
 {
-  if(RUN_SIM_VERIFY & VERIFY_MEAN_DISTRIB_SCR & TRUE)
+  if(RUN_SIM_VERIFY & VERIFY_MEAN_DISTRIB_SCR & FALSE)
   {
     print("generateSimData: verify inputs")
     print(paste0("sampleRepetitions = ", sampleRepetition))
@@ -118,7 +118,7 @@ generateSimData <- function(sampleRepetition, sampleSize, lambda)
     write.csv(sampleMatrix, filename, row.names=FALSE)
   }
 
-  if(RUN_SIM_VERIFY & VERIFY_SOURCE_SCR & TRUE)
+  if(RUN_SIM_VERIFY & VERIFY_SOURCE_SCR & FALSE)
   {
     print("generateSimData: ")
     print(simData)
@@ -127,7 +127,7 @@ generateSimData <- function(sampleRepetition, sampleSize, lambda)
   return (simData)
 }
 
-if(RUN_SIM_VERIFY & TRUE)
+if(RUN_SIM_VERIFY & FALSE)
 {
   lambda       <- 0.2
   sampleSize   <- 40
@@ -147,7 +147,7 @@ if(RUN_SIM_VERIFY & TRUE)
 
 calcMeanDistributions <- function(sampleRepetition, simData)
 {
-  if(RUN_VERIFY_MEAN_DISTRIB & VERIFY_MEAN_DISTRIB_SCR & TRUE)
+  if(RUN_VERIFY_MEAN_DISTRIB & VERIFY_MEAN_DISTRIB_SCR & FALSE)
   {
     print("generateSimData: verify inputs")
     print(paste0("sampleRepetitions = ", sampleRepetition))
@@ -167,7 +167,7 @@ calcMeanDistributions <- function(sampleRepetition, simData)
   return (meanDistributions)
 }
 
-if(RUN_VERIFY_MEAN_DISTRIB & TRUE)
+if(RUN_VERIFY_MEAN_DISTRIB & FALSE)
 {
   print("RUN_VERIFY_MEAN_DISTRIB: meanDistributions")
   lambda       <- 0.2
@@ -191,7 +191,7 @@ if(RUN_VERIFY_MEAN_DISTRIB & TRUE)
 
 getSampleMeansStats <- function (sampleRepetition, meanDistributions, mu, var)
 {
-  if(RUN_VERIFY_STATS & VERIFY_SAMPLE_STATS_SCR & TRUE)
+  if(RUN_VERIFY_STATS & VERIFY_SAMPLE_STATS_SCR & FALSE)
   {
     print("getSampleMeansStats: verify inputs")
     print(paste0("sampleRepetitions = ", sampleRepetition))
@@ -292,7 +292,7 @@ imageConvergence <- function(sampleRepetition, sampleMeansStats)
   # ----------------------------------------------------------------------------------
 }
 
-if(RUN_VERIFY_CONVERGE_IMG & TRUE)
+if(RUN_VERIFY_CONVERGE_IMG & FALSE)
 {
   lambda       <- 0.2
   sampleSize   <- 40
@@ -312,10 +312,10 @@ if(RUN_VERIFY_CONVERGE_IMG & TRUE)
 ```
 
 ```{=tex}
-\begin{wrapfigure}{r}{0.5\textwidth}
-  \centering
-    \includegraphics[width=\linewidth]{converge.png}
-\end{wrapfigure}
+<!-- \begin{wrapfigure}{r}{0.5\textwidth} -->
+<!--   \centering -->
+<!--     \includegraphics[width=\linewidth]{converge.png} -->
+<!-- \end{wrapfigure} -->
 ```
 ### imageMeanDistribution
 
@@ -348,7 +348,7 @@ imageMeanDistribution <- function(sampleRepetition, sampleSize, meanDistribution
     colnames(frame) <- c("pdf")
 
     # ###########################################################################
-    if(RUN_MEAN_DIST_IMG & VERIFY_MEAN_DIST_IMG & TRUE)
+    if(RUN_MEAN_DIST_IMG & VERIFY_MEAN_DIST_IMG & FALSE)
     {
       print(paste0("imageMeanDistribution: len binRange:    ", length(binRange)))
       print(paste0("imageMeanDistribution: len binName:     ", length(binName)))
@@ -371,6 +371,29 @@ imageMeanDistribution <- function(sampleRepetition, sampleSize, meanDistribution
       scale_y_continuous(limits = c(-0.1, 1.1), "Count")
   }
 
+  # ###########################################################################
+  # ###########################################################################
+  # d<-density(frame[["pdf"]])
+  # dd <- approxfun(d$x, d$y)
+  # val <- dd(mean(frame[["pdf"]]))
+  # print(val)
+  # print(mean(frame[["pdf"]]))
+
+  d<-density(binRange)
+  print("dx")
+  print(d$x)
+  print("dy")
+  print(d$y)
+  dd <- approxfun(d$x, d$y)
+  val <- dd(mean(binRange))
+  print(val)
+  print(mean(binRange))
+
+  # vals <- ggplot_build(pltList[[1]])$data[[1]]
+  # print(vals)
+  # ###########################################################################
+  # ###########################################################################
+
   plt <- ggarrange(pltList[[1]], pltList[[2]], pltList[[3]], pltList[[4]],
           labels = label,
           ncol = 2, nrow = 2)
@@ -392,7 +415,7 @@ if(RUN_MEAN_DIST_IMG & TRUE)
   binName           <- list()
 
   for (i in 1:(length(binRange)-1)) {
-    print(paste0("[", binRange[i], ", ", binRange[i+1], ")"))
+    # print(paste0("[", binRange[i], ", ", binRange[i+1], ")"))
     binName <- append(binName, paste0("[", binRange[i], ", ", binRange[i+1], ")"))
   }
 
@@ -511,10 +534,10 @@ if(RUN_VERIFY_TOOTH_IMG & TRUE)
 ```
 
 ```{=tex}
-\begin{wrapfigure}{r}{0.5\textwidth}
-  \centering
-    \includegraphics[width=\linewidth]{tooth.png}
-\end{wrapfigure}
+<!-- \begin{wrapfigure}{r}{0.5\textwidth} -->
+<!--   \centering -->
+<!--     \includegraphics[width=\linewidth]{tooth.png} -->
+<!-- \end{wrapfigure} -->
 ```
 ## Tables
 
@@ -757,7 +780,7 @@ calcAreaDelta <- function(sampleRepetition, meanDistributions, mu, sigma)
   }
 
   theoreticalArea = integrateF(normalF, 0.1, -10, 20, mu, sigma)
-  print(paste0("theoreticalArea = ", theoreticalArea))
+  print(paste0("theoreticalArea = ", theoreticalArea)) 
   for (i in 1:length(sampleRepetition)) {
     samplePDF <- density(meanDistributions[[i]], from=0, to=9)
     # sampleArea <- integrateF(meanDistributions[[i]], sampleRepetition[i], 0, 10)
@@ -768,7 +791,7 @@ calcAreaDelta <- function(sampleRepetition, meanDistributions, mu, sigma)
   return (meanDistributions)
 }
 
-if(RUN_CALCULATE_AREA_D)
+if(RUN_CALCULATE_AREA_D & FALSE)
 {
   sampleSize   <- 40
   sampleRepetition  <- c(10, 20, 30, 40)
