@@ -147,149 +147,244 @@ if(FALSE)
 }
 
 ```
+<!-- ###################################################################################### -->
+<!-- ###################################################################################### -->
+<!-- ###################################################################################### -->
+<!-- ### Generate Simulation Data -->
 
-### Generate Simulation Data
+```{r generateSampleMeansLists, echo=FALSE}
+# 
+# generateSampleMeansLists <- function(sampleRepetition)
+# {
+#   if(RUN_SIM_VERIFY & VERIFY_MEAN_DISTRIB_SCR | FALSE)
+#   {
+#     print("generateSampleMeansLists: verify inputs")
+#     print(paste0("sampleRepetitions = ", sampleRepetition))
+#     print(paste0("sampleSize   = ", sampleSize))
+#     print(paste0("lambda       = ", lambda))
+#   }
+# 
+#   # ----------------------------------------------------------------------------------
+#   simData <- list()
+# 
+#   for (i in 1:length(sampleRepetition)) {
+#     simData[[i]] <- matrix(rexp(sampleRepetition[i]*sampleSize, lambda),
+#                                    nrow = sampleSize, ncol = sampleRepetition[i])
+#   }
+# 
+# 
+#   # ----------------------------------------------------------------------------------
+# 
+#   if(RUN_SIM_VERIFY & VERIFY_SOURCE_FILE | FALSE)
+#   {
+#     print("generateSampleMeansLists: store in simData_#.csv")
+#     filename <- paste0("simData_", sampleRepetition[i], ".csv")
+#     write.csv(sampleMatrix, filename, row.names=FALSE)
+#   }
+# 
+#   if(RUN_SIM_VERIFY & VERIFY_SOURCE_SCR | FALSE)
+#   {
+#     print("generateSampleMeansLists: ")
+#     print(simData)
+#   }
+# 
+#   return (simData)
+# }
+# 
+# if(RUN_SIM_VERIFY)
+# {
+#   sampleRepetition  <- c(10, 20, 30, 40)
+# 
+#   simData <- generateSampleMeansLists(sampleRepetition)
+# 
+#   print("RUN_SIM_VERIFY: simData")
+#   print(simData)
+# }
 
-```{r generateSimData, echo=FALSE}
+```
 
-generateSimData <- function(sampleRepetition)
+<!-- # Part I -->
+
+<!-- ### Generate Mean Distributions -->
+
+```{r generateMeanDist, echo=FALSE}
+# 
+# generateMeanDist <- function(sampleRepetition, simData)
+# {
+#   if(VERIFY_MEAN_DISTRIB_SCR | FALSE)
+#   {
+#     print("generateMeanDist: verify inputs")
+#     print(paste0("sampleRepetitions = ", sampleRepetition))
+#     print(paste0("lambda            = ", lambda))
+#     print(paste0("mu                = ", mu))
+#     print(paste0("variance            = ", variance))
+#     print(paste0("sampleSD         = ", sampleSD))
+#     # print("simData = ")
+#     # print(simData)
+#     print("Test sim data separately")
+#   }
+# 
+#   # ----------------------------------------------------------------------------------
+#   # distributions     <- list()
+#   sampleMeansLists <- list()
+# 
+#   for (i in 1:length(sampleRepetition)) {
+#     sampleMeansLists[[i]]   <- colMeans(simData[[i]])
+#   }
+# # 
+# #   transformToN <- function(sample) {
+# #     (sample - mu)/sampleSD
+# #   }
+# # 
+# #   for (i in 1:length(sampleRepetition)) {
+# #     sampleMeansLists[[i]]   <- lapply(distributions[[i]], transformToN)
+# #     sampleMeansLists[[i]]   <- c(unlist(sampleMeansLists[[i]]))
+# #   }
+#   
+#   if(VERIFY_MEAN_DISTRIB_SCR | FALSE)
+#   {
+#     for (i in 1:length(sampleRepetition)) {
+#       # print("distributions = ")
+#       # print(distributions[i])
+#       print("sampleMeansLists = ")
+#       print(sampleMeansLists[i])
+#     }
+#   }
+# 
+#   # ----------------------------------------------------------------------------------
+# 
+#   if(VERIFY_MEAN_DISTRIB_FILE | FALSE)
+#   {
+#     print("generateMeanDist: store in simData_#.csv")
+#     for (i in 1:length(sampleRepetition)) {
+#       filename <- paste0("sampleMeansLists_", sampleRepetition[i], ".csv")
+#       write.csv(sampleMeansLists[[i]], filename, row.names=FALSE)
+#       
+#       filename2 <- paste0("distributions_", sampleRepetition[i], ".csv")
+#       write.csv(distributions[[i]], filename2, row.names=FALSE)
+#     }
+#   }
+# 
+#   if(VERIFY_MEAN_DISTRIB_SCR | FALSE)
+#   {
+#     print("generateMeanDist: sampleMeansLists")
+#     print(sampleMeansLists)
+#   }
+# 
+#   return (sampleMeansLists)
+# }
+# 
+# if(RUN_VERIFY_MEAN_DISTRIB)
+# {
+#   sampleRepetition  <- c(10, 20, 30, 40)
+# 
+#   simData           <- generateSampleMeansLists(sampleRepetition)
+#   sampleMeansLists <- generateMeanDist(sampleRepetition, simData)
+#   # sampleMeansLists <- generateSampleMeansLists(sampleRepetition)
+# 
+#   print("RUN_VERIFY_MEAN_DISTRIB: sampleMeansLists")
+#   print(sampleMeansLists)
+# }
+
+```
+<!-- ###################################################################################### -->
+<!-- ###################################################################################### --> <!-- ###################################################################################### -->
+
+
+```{r  echo=FALSE}
+
+generateSampleMeansLists <- function(sampleRepetition)
 {
-  if(RUN_SIM_VERIFY & VERIFY_MEAN_DISTRIB_SCR | FALSE)
-  {
-    print("generateSimData: verify inputs")
-    print(paste0("sampleRepetitions = ", sampleRepetition))
-    print(paste0("sampleSize   = ", sampleSize))
-    print(paste0("lambda       = ", lambda))
-  }
-
   # ----------------------------------------------------------------------------------
   simData <- list()
+  sampleMeansLists <- list()
+
+  # for (i in 1:length(sampleRepetition)) {
+  #   simData[[i]] <- matrix(rexp(sampleRepetition[i]*sampleSize, lambda),
+  #                                  nrow = sampleSize, ncol = sampleRepetition[i])
+  # }
+  # # ----------------------------------------------------------------------------------
+  # 
+  # for (i in 1:length(sampleRepetition)) {
+  #   sampleMeansLists[[i]]   <- colMeans(simData[[i]])
+  # }
+
+  # ----------------------------------------------------------------------------------
 
   for (i in 1:length(sampleRepetition)) {
     simData[[i]] <- matrix(rexp(sampleRepetition[i]*sampleSize, lambda),
                                    nrow = sampleSize, ncol = sampleRepetition[i])
+    sampleMeansLists[[i]]   <- colMeans(simData[[i]])
   }
+
   # ----------------------------------------------------------------------------------
 
-  if(RUN_SIM_VERIFY & VERIFY_SOURCE_FILE | FALSE)
-  {
-    print("generateSimData: store in simData_#.csv")
-    filename <- paste0("simData_", sampleRepetition[i], ".csv")
-    write.csv(sampleMatrix, filename, row.names=FALSE)
-  }
-
-  if(RUN_SIM_VERIFY & VERIFY_SOURCE_SCR | FALSE)
-  {
-    print("generateSimData: ")
-    print(simData)
-  }
-
-  return (simData)
-}
-
-if(RUN_SIM_VERIFY)
-{
-  sampleRepetition  <- c(10, 20, 30, 40)
-
-  simData <- generateSimData(sampleRepetition)
-
-  print("RUN_SIM_VERIFY: simData")
-  print(simData)
+  return (sampleMeansLists)
 }
 
 ```
 
-# Part I
+### Generate Sample Mean Stats
 
-## Mean Distributions
+```{r generateSampleMeansStats, echo=FALSE}
 
-### Generate Mean Distributions
-
-```{r generateMeanDist, echo=FALSE}
-
-generateMeanDist <- function(sampleRepetition, simData)
+generateSampleMeansStats <- function (sampleRepetition, sampleMeansLists)
 {
-  if(VERIFY_MEAN_DISTRIB_SCR | FALSE)
+  if(VERIFY_SAMPLE_STATS_SCR | FALSE)
   {
-    print("generateMeanDist: verify inputs")
-    print(paste0("sampleRepetitions = ", sampleRepetition))
-    print(paste0("lambda            = ", lambda))
-    print(paste0("mu                = ", mu))
-    print(paste0("variance            = ", variance))
-    print(paste0("sampleSD         = ", sampleSD))
-    # print("simData = ")
-    # print(simData)
-    print("Test sim data separately")
+    print("generateSampleMeansStats: verify inputs")
+    print(paste0("mu           = ", mu))
+    print(paste0("var          = ", var))
+    # print("sampleRepetition = ")
+    # print(sampleRepetition)
+    print("Test sampleRepetition separately")
+    # print("sampleMeansLists = ")
+    # print(sampleMeansLists)
+    print("Test sampleMeansLists separately")
   }
 
-  # ----------------------------------------------------------------------------------
-  distributions     <- list()
-  meanDistributions <- list()
-
+  # -----------------------------------------------------------------------------
+  sampleStats <- data.frame(N_obs = integer(), mu = double(), muErr = double(), 
+                            variation = double(), varErr = double())  
   for (i in 1:length(sampleRepetition)) {
-    distributions[[i]]   <- colMeans(simData[[i]])
-  }
+    xbar     <- mean(sampleMeansLists[[i]])
+    variance <- var(sampleMeansLists[[i]])
 
-  transformToN <- function(sample) {
-    (sample - mu)/sampleSD
+    sampleStats  <- rbind(sampleStats, 
+                           c(sampleRepetition[i], xbar, abs((mu - xbar)/xbar),
+                             variance, abs((var - variance)/variance)))
   }
-
-  for (i in 1:length(sampleRepetition)) {
-    meanDistributions[[i]]   <- lapply(distributions[[i]], transformToN)
-    meanDistributions[[i]]   <- c(unlist(meanDistributions[[i]]))
-  }
+  colnames(sampleStats) <- c("NRep", "Mean", "Mean\nAbsolute\nError", 
+                             "Variance", "Variance\nAbsolute\nError")
+  # -----------------------------------------------------------------------------
   
-  if(VERIFY_MEAN_DISTRIB_SCR | TRUE)
-  {
-    for (i in 1:length(sampleRepetition)) {
-      print("distributions = ")
-      print(distributions[i])
-      print("meanDistributions = ")
-      print(meanDistributions[i])
-    }
-  }
-
-  # ----------------------------------------------------------------------------------
-
-  if(VERIFY_MEAN_DISTRIB_FILE | TRUE)
-  {
-    print("generateMeanDist: store in simData_#.csv")
-    for (i in 1:length(sampleRepetition)) {
-      filename <- paste0("meanDistributions_", sampleRepetition[i], ".csv")
-      write.csv(meanDistributions[[i]], filename, row.names=FALSE)
-      
-      filename2 <- paste0("distributions_", sampleRepetition[i], ".csv")
-      write.csv(distributions[[i]], filename2, row.names=FALSE)
-    }
-  }
-
-  if(VERIFY_MEAN_DISTRIB_SCR | FALSE)
-  {
-    print("generateMeanDist: meanDistributions")
-    print(meanDistributions)
-  }
-
-  return (meanDistributions)
+  return (sampleStats)
 }
 
-if(RUN_VERIFY_MEAN_DISTRIB)
+if(RUN_VERIFY_STATS)
 {
+  lambda       <- 0.2
+  sampleSize   <- 40
+  mu           <- 1/lambda
+  var          <- mu^2/sqrt(sampleSize)
   sampleRepetition  <- c(10, 20, 30, 40)
 
-  simData           <- generateSimData(sampleRepetition)
-  meanDistributions <- generateMeanDist(sampleRepetition, simData)
-
-  print("RUN_VERIFY_MEAN_DISTRIB: meanDistributions")
-  print(meanDistributions)
+  simData           <- generateSampleMeansLists(sampleRepetition, sampleSize, lambda)
+  sampleMeansLists <- calcSampleMeansLists(sampleRepetition, simData)
+  sampleMeansStats  <- generateSampleMeansStats(sampleRepetition, sampleMeansLists, mu, var)
+  print("RUN_VERIFY_STATS: sampleMeansStats")
+  print(sampleMeansStats)
 }
 
 ```
+
+## Images
 
 ### Create Gaussian Images
 
 ```{r imageDistribution, echo = FALSE, warning = FALSE, fig.dim = c(6, 5)}
 
-imageMeanDistribution <- function(sampleRepetition, meanDistributions, binRange)
+imageMeanDistribution <- function(sampleRepetition, sampleMeansLists, binRange)
 {
   if(VERIFY_MEAN_DIST_IMG | FALSE)
   {
@@ -303,25 +398,23 @@ imageMeanDistribution <- function(sampleRepetition, meanDistributions, binRange)
     # print("binRange = ")
     # print(binRange)
     print("Test binRange separately")
-    # print("meanDistributions = ")
-    # print(meanDistributions)
-    print("Test meanDistributions separately")
+    # print("sampleMeansLists = ")
+    # print(sampleMeansLists)
+    print("Test sampleMeansLists separately")
   }
-
   # -----------------------------------------------------------------------------
   label <- c("a", "b","c","d")
   pltList <- list()
 
+  transformToN <- function(sample) {
+    (sample - mu)/sampleSD
+  }
+
   for (i in 1:length(sampleRepetition)) {
-    frame <- data.frame(pdf = meanDistributions[[i]])
-    # frame  <- data.frame(pdf = meanDistributions[[i]])
-    # colnames(frame) <- c("pdf")
-    
-    if(VERIFY_MEAN_DIST_IMG | FALSE)
+    frame <- data.frame(pdf = c(unlist(lapply(sampleMeansLists[[i]], transformToN))))
+
+    if(VERIFY_MEAN_DIST_IMG | TRUE)
     {
-      # print(paste0("class meanDistributions[i] ", typeof(meanDistributions[i])))
-      # print("imageMeanDistribution: meanDistributions[i]")
-      # print(meanDistributions[i])
       print("imageMeanDistribution: frame")
       print(frame)
     }
@@ -329,8 +422,8 @@ imageMeanDistribution <- function(sampleRepetition, meanDistributions, binRange)
     if(VERIFY_MEAN_DIST_IMG_FILE | FALSE)
     {
       print("generateMeanDist: store in simData_#.csv")
-      filename <- paste0("meanDistributionsIMG_", sampleRepetition[i], ".csv")
-      write.csv(meanDistributions[[i]], filename, row.names=FALSE)
+      filename <- paste0("sampleMeansListsIMG_", sampleRepetition[i], ".csv")
+      write.csv(sampleMeansLists[[i]], filename, row.names=FALSE)
       
       filename2 <- paste0("frame", sampleRepetition[i], ".csv")
       write.csv(frame, filename2, row.names=FALSE)
@@ -338,17 +431,17 @@ imageMeanDistribution <- function(sampleRepetition, meanDistributions, binRange)
     }
 
     pltList[[i]] <- ggplot(frame, aes(x = pdf)) +
-      geom_histogram(aes(y = ..density..), breaks = binRange, fill = "#a0a0a0",
+      geom_histogram(aes(y = after_stat(density)), breaks = binRange, fill = "#ffc845",
                      color = "#e9ecef") +
-      geom_vline(aes(xintercept=mean(pdf)), color="red", linewidth = 0.5) +
-      geom_vline(aes(xintercept = 0.0), color="blue", linewidth = 0.5) +
-      geom_density(alpha = 0.2, color = "red", fill="red")  +
+      geom_vline(aes(xintercept=mean(pdf)), color="#000000", linewidth = 0.5) +
+      geom_vline(aes(xintercept = 0.0), color="#00bfb2", linewidth = 0.5) +
+      geom_density(alpha = 0.2, color = "#000000", fill="#000000")  +
       stat_function(fun = function (x)
         dnorm(x, mean =  0, sd = 1),
-        color = "blue", fill = "blue",
+        color = "#00bfb2", fill = "#00bfb2",
                 geom = "area", alpha = 0.2) +
       ggtitle(paste0("Sample Mean with n = ", sampleRepetition[i])) +
-      scale_x_continuous(limits = c(-3, 3), "Mean") +
+      scale_x_continuous(limits = c(-5, 5), "Mean") +
       scale_y_continuous(limits = c(-0.1, 0.81), "Density")
   }
 
@@ -366,9 +459,9 @@ if(RUN_MEAN_DIST_IMG)
   sampleRepetition  <- c(10, 20, 30, 1000)
   binRange          <- seq(-3.0, 3.0, by = 0.5)
 
-  simData           <- generateSimData(sampleRepetition)
-  meanDistributions <- generateMeanDist(sampleRepetition, simData)
-  imageMeanDistribution(sampleRepetition, meanDistributions, binRange)
+  simData           <- generateSampleMeansLists(sampleRepetition)
+  sampleMeansLists <- generateMeanDist(sampleRepetition, simData)
+  imageMeanDistribution(sampleRepetition, sampleMeansLists, binRange)
 
   print("RUN_MEAN_DIST_IMG: check image")
 }
@@ -376,69 +469,226 @@ if(RUN_MEAN_DIST_IMG)
 ```
 
 
-## Convergence
+### Create Convergence Image
 
-### Generate Sample Mean Distributions
+```{r imageConvergencePlot, echo = FALSE, results = 'hide'}
+# ```{r smGraph, echo = FALSE, fig.dim = c(4, 2)}
 
-### Create Sample Mean Image
+imageConvergencePlot <- function(sampleRepetition, sampleStats)
+{
+  if(VERIFY_CONVERGE_IMG | FALSE)
+  {
+    print("generateSampleMeansStats: verify inputs")
+    print(paste0("mu           = ", mu))
+    print(paste0("var          = ", var))
+    # print("sampleRepetition = ")
+    # print(sampleRepetition)
+    print("Test sampleRepetition separately")
+    print("sampleStats = ")
+    print(sampleStats)
+    # print("Test sampleStats separately")
+  }
+
+  
+  sampleStats <- cbind(sampleStats, OffsetVar = sampleStats$Variance + 5)
+  # names(sampleStats) <- c("size", "mean", "variance")
+
+  graphTics   <- c(5, 10, 100, 1000, 10000, 100000, 1000000)
+
+  plt <- ggplot(sampleStats, aes(x = as.numeric(NRep))) +
+    geom_hline(yintercept = 5, color="gray", linewidth = 0.5) +
+    geom_hline(yintercept = 5.625, color="pink", linewidth = 0.5) +
+    geom_line(aes(y=OffsetVar, color='Variance')) +
+    geom_line(aes(y=Mean, color='Mean')) +
+    scale_x_log10(breaks = graphTics, limits = c(4.9, 1000000.0)) +
+    # scale_x_log10(breaks = graphTics, limits = c(0.1, 1000000.0)) +
+    scale_y_continuous(limits = c( 4.7, 5.7 ), "Mean",
+    sec.axis = sec_axis(~ . -5, name = "Variance")) +
+    ggtitle("Sample Mean and Variance") + xlab("Sample Size (log n)") +
+    scale_color_manual(
+      name='Statistic', breaks=c('Variance', 'Mean'),
+      values=c('Mean'='blue', 'Variance'='red')) +
+    theme(plot.title = element_text(size = 10, hjust = 0.5),
+          axis.title.x = element_text(size = 8),
+          axis.title.y = element_text(size = 8),
+          axis.text.x = element_text(face="bold", size=6),
+          axis.text.y = element_text(face="bold", size=6),
+          legend.title = element_text(size = 6),
+          legend.text = element_text(size = 6),
+          legend.key.size = unit(2, 'mm'),
+          legend.position = c(0.85, 0.55))
+
+  ggsave(plot = plt, width = 4.0, height = 2.5, dpi = 300,
+         filename = "converge.png")
+
+}
+
+```
+
+
+## Tables
+
+
+### generateConvergeTable
+
+```{r generateConvergeTable, echo = FALSE}
+generateConvergeTable <- function (sampleMeansStats)
+{
+  if(VERIFY_CONVERGE_TABLE | FALSE)
+  {
+    print("imageConvergence: verify inputs")
+    print(paste0("sampleMeansStats  = ", sampleMeansStats))
+  }
+
+  # -----------------------------------------------------------------------------
+
+  resTable <- knitr::kable(sampleMeansStats, "latex",
+    caption = paste0("table"),
+    digits = 3, align = "llll",
+    # col.names = c("NObs", "Mean", "Mean\nError", "Var", "Var Error"), 
+    row.names = TRUE
+    ) %>%
+    kable_styling(bootstrap_options = c("striped", "hover"),
+                  full_width = F,
+                  position = "left",
+                  font_size = 8) %>%
+    column_spec(column=1, width="0.2cm") %>%
+    column_spec(column=2, width="1.0cm") %>%
+    column_spec(column=3, width="0.7cm") %>%
+    column_spec(column=4, width="1.5cm") %>%
+    column_spec(column=5, width="1.0cm") %>%
+    column_spec(column=6, width="1.5cm") %>%
+    kable_classic_2()
+  # -----------------------------------------------------------------------------
+
+  return (resTable)
+
+}
+
+if(RUN_VERIFY_CONVERGE_TABLE)
+{
+  lambda       <- 0.2
+  sampleSize   <- 40
+  mu           <- 1/lambda
+  var          <- mu^2/sqrt(sampleSize)
+  sampleRepetition  <- c(10, 100, 1000, 10000, 100000, 1000000)
+
+  simData           <- generateSampleMeansLists(sampleRepetition, sampleSize, lambda)
+  sampleMeansLists <- calcSampleMeansLists(sampleRepetition, simData)
+  sampleMeansStats  <- getSampleMeansStats(sampleRepetition, sampleMeansLists, mu, var)
+  resTable          <- generateConvergeTable(sampleMeansStats)
+
+  print("RUN_VERIFY_CONVERGE_TABLE: : resTable")
+}
+
+```
+
+
+
 
 # Part II
 
-
-
-
 ### Teeth data
 
+```{r generateToothData, echo=FALSE}
+
+generateToothData <- function (ToothGrowth)
+{
+  if(RUN_VERIFY_TOOTH_DATA | FALSE)
+  {
+    print("generateToothData: verify inputs")
+    print("ToothGrowth = ")
+    print(ToothGrowth)
+  }
+
+  # -----------------------------------------------------------------------------
+  allFactor   <- as.factor(paste0(ToothGrowth$supp, "-", ToothGrowth$dose))
+  ToothGrowth <- cbind(ToothGrowth, allFactor)
+  # -----------------------------------------------------------------------------
+
+  if(VERIFY_TOOTH_DATA & RUN_VERIFY_TOOTH_DATA | FALSE)
+  {
+    print("generateToothData: output")
+    print("ToothGrowth = ")
+    print(ToothGrowth)
+  }
+
+  return (ToothGrowth)
+
+}
+
+if(RUN_VERIFY_TOOTH_DATA | FALSE)
+{
+  doses      = c(0.5, 1.0, 2.0) # mg/day
+  supplement = c("OJ", "AA")    # supplement of AA, OJ - Orange Juice, AA - Ascorbic Acid
+
+  nPigs    <- 60
+  nLength  <- nPigs/(length(doses)*length(supplement))
+  nBins    <- nPigs/nLength
+  # bw       <- c(3, 3, 4, 3, 3, 4)
+
+  ToothGrowth <- generateToothData(ToothGrowth)
+  print("RUN_VERIFY_TOOTH_DATA: ToothGrowth data")
+  print(ToothGrowth)
+}
+
+
+```
+
+### generateToothImage
+
+<!-- , results = 'hide' -->
+
+```{r echo = FALSE, warning = FALSE, fig.dim = c(8, 4)}
+
+generateToothImage <- function (ToothGrowth)
+{
+  if(VERIFY_TOOTH_IMG | FALSE)
+  {
+    print("generateToothImage: verify inputs")
+    print("ToothGrowth = ")
+    print(ToothGrowth)
+  }
+
+  # -----------------------------------------------------------------------------
+ToothGrowth$dotColor <- c(rep("blue",10),
+                          rep("green",10),
+                          rep("orange",10),
+                          rep("purple",10),
+                          rep("yellow",10),
+                          rep("red",10))
+
+plt <- ggplot(ToothGrowth, aes(x = allFactor, y = len)) +
+  geom_boxplot() +
+  geom_dotplot(binaxis='y',
+               stackdir='center',
+               dotsize = 0.5,
+               fill = ToothGrowth$dotColor) +
+  labs(title="Effect of Vitamin C on Tooth Growth",
+       subtitle="Supplement and Dosage",
+       caption="Source: C. I. Bliss (1952). The Statistics of Bioassay. Academic Press.",
+       x="Supplement (OJ, VC), Dosage(0.5, 1.0, 2.0)",
+       y="Tooth Length")
+
+
+ggsave(plot = plt, width = 4.0, height = 3.5, dpi = 300,
+       filename = "teeth.png")
+  # -----------------------------------------------------------------------------
+
+}
+
+if(RUN_VERIFY_TOOTH_IMG)
+{
+  ToothGrowth <- generateToothData(ToothGrowth)
+  generateToothImage(ToothGrowth)
+  print("RUN_VERIFY_TOOTH_IMG: check image")
+}
+
+```
+
+
+
 ```{r teethData, echo=FALSE}
-# 
-# doses    = c(0.5, 1.0, 2.0) # mg/day
-# delivery = c("OJ", "AA")    # delivery of AA, OJ - Orange Juice, AA - Ascorbic Acid
-# 
-# nPigs    <- 60
-# nLength  <- nPigs/(length(doses)*length(delivery))
-# nBins    <- nPigs/nLength
-# bw <- c(3, 3, 4, 3, 3, 4)
-# p <- list()
-# 
-#   doseFactor  <- as.factor(ToothGrowth$dose)
-#   allFactor   <- as.factor(paste0(ToothGrowth$supp, "-", ToothGrowth$dose))
-#   
-#   ToothGrowth <- cbind(ToothGrowth, doseFactor)
-#   ToothGrowth <- cbind(ToothGrowth, allFactor)
-#   # print("All factor")
-#   # print(allFactor)
-#   # print(ToothGrowth)
-# 
-# createTeethData <- function ()
-# {
-#   teethDF <- data.frame(matrix(0, nrow = 10, ncol = 0))
-#   # toothLen <- ToothGrowth$len
-#   treatmentName <- c()
-#   # print("ToothGrowth:")
-#   # print(class(ToothGrowth))
-#   # print(ToothGrowth)
-#   # print("toothLen:")
-#   # print(class(toothLen))
-#   # print(toothLen)
-#   # print(toothLen[1:10])
-#   for (i in 1:nBins){
-#     # print(ToothGrowth[((i-1)*nLength + 1) : (i*nLength),])
-#     # print(cbind(ToothGrowth[((i-1)*nLength + 1) : (i*nLength),]))
-#     # print(paste0(i, " start = ", (i-1)*nLength + 1, " end = ", i*nLength))
-#     # print(toothLen[((i-1)*nLength + 1) : (i*nLength)])
-#     # print("------------------------------------")
-#     # # teethDF <- cbind(teethDF, toothLen[((i-1)*nLength + 1) : (i*nLength)])
-#     # treatmentName[i] <- paste0(ToothGrowth$supp[(i - 1)*10 + 1], 
-#     #                            "_",  ToothGrowth$dose[(i - 1)*10 + 1])
-#   }
-#   # colnames(ToothGrowth) <- treatmentName
-#   # print(ToothGrowth)
-#   # print(toothLen)
-#   # print(teethDF)
-#   
-#   return (teethDF)
-# 
-# }
 
 # Now in the second portion of the project, we're going to analyze the ToothGrowth data in the R datasets package.
 # Load the ToothGrowth data and perform some basic exploratory data analyses
@@ -457,219 +707,44 @@ if(RUN_MEAN_DIST_IMG)
 
 ```
 
-## Images
-### Convergence image
-
-```{r smGraph, echo = FALSE, results = 'hide'}
-# ```{r smGraph, echo = FALSE, fig.dim = c(4, 2)}
-
-# createConvergencePlot <- function()
-# {
-#   # sampleSize  <- c(10, 20, 30, 40, 50, 60, 70, 80, 90,
-#   #                  100, 200, 300, 400, 500, 600, 700, 800, 900,
-#   #                  1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000,
-#   #                  10000)
-# 
-#   sampleSize   <- c(10, 20, 30, 40, 100, 1000, 10000, 100000, 1000000, 10000000)
-#   meanColMatrix   <- setSource(sampleSize)
-#   sampleStats  <- generateSampleStats(sampleSize, meanColMatrix)
-# 
-#   names(sampleStats) <- c("size", "mean", "variance")
-#   print("generateSampleStats: sampleStats")
-#   print(sampleStats)
-# 
-#   sampleStats <- sampleStats %>% mutate(variance = variance + 5.0)
-# 
-#   graphTics   <- c(5, 10, 100, 1000, 10000, 100000, 1000000, 10000000)
-# 
-#   plt <- ggplot(sampleStats, aes(x = size)) +
-#     geom_line(aes(y=mean, color='Mean')) +
-#     geom_line(aes(y=variance, color='Variance')) +
-#     geom_hline(yintercept = 5, color="1/lambda") +
-#     scale_x_log10(breaks = graphTics, limits = c(sampleSize[1],
-#                   sampleSize[28]+1)) +
-#     scale_y_continuous(limits = c( 4.6, 5.4 ), "Mean",
-#     sec.axis = sec_axis(~ . - 5.0, name = "Variance")) +
-#     ggtitle("Sample Mean and Variance") + xlab("Sample Size (log n)") +
-#     scale_color_manual(
-#       name='Statistic', breaks=c('Mean', 'Variance',"1/lambda"),
-#       values=c('Mean'='blue', 'Variance'='red', "1/lambda"='black')) +
-#     theme(plot.title = element_text(size = 10, hjust = 0.5),
-#           axis.title.x = element_text(size = 8),
-#           axis.title.y = element_text(size = 8),
-#           axis.text.x = element_text(face="bold", size=6),
-#           axis.text.y = element_text(face="bold", size=6),
-#           legend.title = element_text(size = 6),
-#           legend.text = element_text(size = 6),
-#           legend.key.size = unit(2, 'mm'),
-#           legend.position = c(0.85, 0.75))
-# 
-#   ggsave(plot = plt, width = 4.0, height = 2.5, dpi = 300,
-#          filename = "converge.png")
-# }
-
-```
-
-### gaussian images
-
-<!-- # ```{r echo = FALSE, warning = FALSE, results = 'hide', fig.dim = c(4, 3)} -->
-```{r echo = FALSE, warning = FALSE, fig.dim = c(4, 3)}
-# 
-# createHistograms <- function()
-# {
-#   sampleSize <- c(2, 10, 30, 40)
-#   label <- c("a", "b","c","d")
-# 
-#   pltList <- list()
-# 
-#   meanColMatrix   <- setSource(sampleSize)
-# 
-#   for (i in 1:length(sampleSize)) {
-#     frame  <- data.frame(pdf = meanColMatrix[,i])
-# 
-#     pltList[[i]] <- ggplot(frame, aes(x = pdf)) +
-#       geom_histogram(binwidth = 0.5, fill="#000000", color="#e9ecef") +
-#       stat_function(fun = function (x)
-#         dnorm(x, mean =  mu, sd = sigma/sqrt(nSamples))*25,
-#         color = "green") +
-#       ggtitle(paste0("Sample Mean with n = ", sampleSize[i])) +
-#       scale_x_continuous(limits = c(-1, 10.0), "Mean") +
-#       scale_y_continuous(limits = c(-0.1, 20), "Count")
-#   }
-# 
-#   plt <- ggarrange(pltList[[1]], pltList[[2]], pltList[[3]], pltList[[4]],
-#           labels = label,
-#           ncol = 2, nrow = 2)
-# 
-#   ggsave(plot = plt, width = 6.0, height = 4.0, dpi = 300,
-#          filename = "distribution.png")
-# }
-
-```
-
-### teeth image
-
-<!-- , results = 'hide' -->
-```{r echo = FALSE, warning = FALSE, fig.dim = c(4, 3)}
-# 
-# createDotPlot <- function (x_axis)
-# {
-#   ToothGrowth$dotColor <- c(rep("blue",10),
-#                             rep("green",10),
-#                             rep("orange",10),
-#                             rep("purple",10),
-#                             rep("yellow",10),
-#                             rep("red",10))
-# 
-#   g <- ggplot(ToothGrowth, aes_string(x = x_axis, y = "len"))
-#   g + geom_boxplot() +
-#     geom_dotplot(binaxis='y',
-#                  stackdir='center',
-#                  dotsize = .5,
-#                  fill = ToothGrowth$dotColor) +
-#     labs(title="Effect of Vitamin C on Tooth Growth",
-#          subtitle="Delivery and Dosage",
-#          caption="Source: ???",
-#          x="Delivery (OJ, VC), Dosage(0.5, 1.0, 2.0)",
-#          y="Tooth Length")
-# 
-# }
-
-```
-
-
-
-
-
-<!-- \begin{wrapfigure}{r}{0.3\textwidth} -->
-<!--   \centering -->
-<!--     \includegraphics[width=\linewidth]{teeth.png} -->
-<!-- \end{wrapfigure} -->
-
-
-## Tables
-```{r, echo = FALSE}
-# 
-#   statData <- data.frame(n = c(sampleStats$size[1],
-#                           sampleStats$size[10],
-#                           sampleStats$size[19],
-#                           sampleStats$size[28]),
-#                  Mean = c(sampleStats$mean[1],
-#                           sampleStats$mean[10],
-#                           sampleStats$mean[19],
-#                           sampleStats$mean[28]),
-#                  Deviation = c(sampleStats$st_dev[1],
-#                                sampleStats$st_dev[10],
-#                                sampleStats$st_dev[19],
-#                                sampleStats$st_dev[28]))
-
-# summarise_all(c("len", "dose"), mean)
-
-
-```
-
-```{r, echo = FALSE}
-#
-#   histogramData <-
-#     data.frame(
-#       n          = c(sampleSize[1], sampleSize[10],
-#                      sampleSize[19], sampleSize[21]),
-#       Mean       = c(round(sampleMean[[1]]),
-#                          round(sampleMean[[2]]),
-#                          round(sampleMean[[3]]),
-#                          round(sampleMean[[4]])),
-#       DeltaMu    = c("- - - -",
-#                          round(sampleMean[[2]] - sampleMean[[1]], digits = 3),
-#                          round(sampleMean[[3]] - sampleMean[[2]], digits = 3),
-#                          round(sampleMean[[4]] - sampleMean[[3]], digits = 3)),
-#       Sigma      = c(sampleDeviation[[1]],
-#                          sampleDeviation[[2]],
-#                          sampleDeviation[[3]],
-#                          sampleDeviation[[4]]),
-#       DeltaSigma = c("- - - -",
-#                      round(sampleDeviation[[2]] - sampleDeviation[[1]],
-#                            digits = 3),
-#                      round(sampleDeviation[[3]] - sampleDeviation[[2]],
-#                            digits = 3),
-#                      round(sampleDeviation[[4]] - sampleDeviation[[3]],
-#                            digits = 3))
-#       )
-
-```
-
-### normal test
-```{r echo = FALSE}
-
-  # sampleMean      <- list()
-  # sampleDeviation <- list()
-  # comparisonSet <- c(1, 3, 10, 28)
-  #
-  # for (i in 1:length(comparisonSet)) {
-  #   sampleMean[[i]]      <- mean(meanColMatrix[,comparisonSet[[i]]])
-  #   sampleDeviation[[i]] <- sd(meanColMatrix[,comparisonSet[[i]]])
-  # }
-
-```
 
 # Execute
-```{r echo = FALSE}
+```{r execute, echo = FALSE}
 
 if(EXECUTE & TRUE)
 {
   mu           <- 1/lambda
   var          <- mu^2/sqrt(sampleSize)
+
+  # histogram plots
   sampleRepetition  <- c(10, 30, 40, 1000)
   binRange          <- seq(-3.0, 3.0, by = 0.25)
+  # simData           <- generateSampleMeansLists(sampleRepetition)
+  # sampleMeansLists <- generateMeanDist(sampleRepetition, simData)
+  sampleMeansLists <- generateSampleMeansLists(sampleRepetition)
+  imageMeanDistribution(sampleRepetition, sampleMeansLists, binRange)
 
-  simData <- generateSimData(sampleRepetition)
-  meanDistributions <- generateMeanDist(sampleRepetition, simData)
-  imageMeanDistribution(sampleRepetition, meanDistributions, binRange)
+  # convergence plot
+  sampleRepetition <- c(10, 20, 30, 40, 100, 1000, 10000, 100000, 1000000)
+  # simData <- generateSampleMeansLists(sampleRepetition)
+  # sampleMeansLists <- generateMeanDist(sampleRepetition, simData)
+  sampleMeansLists <- generateSampleMeansLists(sampleRepetition)
+
+  sampleMeansStats<- generateSampleMeansStats(sampleRepetition, sampleMeansLists)
+  sampleStats      <- generateSampleMeansStats(sampleRepetition, sampleMeansLists)
+  imageConvergencePlot(sampleRepetition, sampleStats)
+
+  resTable <- generateConvergeTable(sampleMeansStats)
+  
+  # tooth plot
+  # ToothGrowth <- generateToothData(ToothGrowth)
+  # generateToothImage(ToothGrowth)
 }
 
 ```
 
 # --------------------------------
-
+\newpage
 # Overview
 
 Part I of this project will produce a set of simulations designed to show the validity of the Central Limit Theorem. Part II will characterize the R "ToothGrowth" data set [@ToothGrowth] using statistical techniques present by the Johns Hopkins Statistical Inference Online course [@JHU].
@@ -678,7 +753,35 @@ Part I of this project will produce a set of simulations designed to show the va
 
 The objective of Part I is to demonstrate the validity of the Central Limit Theorem (CLT). The CLT "states the following. Let $X_1, X_2, X_3, ..., X_n$ denote a random sample of $n$ independent observations from a population with overall expected value (average) $\mu$ and a finite variance $\sigma^2$, and let $\bar{X_n}$ denote the sample mean of that sample (which is itself a random variable). Then the limit as $n \to \infty$ of the distribution of $\frac {\bar {X_n} - \mu}{\sigma_{\bar X_n}}$, where $\sigma_{\bar X_n} = \sigma/\sqrt{n}$ [@wikipedia]." In other words, the distribution of sample means will approach $N(0,1)$ as the number of samples increases, regardless of the distribution of the random values.
 
-To demonstrate the validity the CLT, the document code generate two images. The first is a set of four plots showing the sample mean distribution for sample sizes of 10, 30, 40, and 1000 Figure 1. Each sample contains forty 
+To demonstrate the validity the CLT, the document code generate two images. The first image is a set of four plots showing the sample mean distribution with sample sizes of 10, 30, 40, and 1000. The second image shows the mean and variance values for sample mean distributions with sample repetitions of 10, 20, 30, 40, 100, 1000, 10000, 100000, and 1000000.
+
+### Generate Sample Means
+
+The first step in the generation of both images is the generation of samples means lists. The $\textbf{\textit{generateSampleMeansLists}}$ function is responsible for the generation of the random values from the exponential mean and converting those values to the sample means list. Given the sample repetitions set $\{10, 30, 40, 1000\}$, the simulation will generate four matrices of sizes $40 \times 10$, $40 \times 30$, $40 \times 40$, and $40 \times 1000$. For each matrix, the function computes the mean of each column and stores the means in a list.
+
+The $\textit{sampleMeansLists}$ contain the cleaned raw data.
+
+
+<!--
+generateSampleMeansLists <- function(sampleRepetition)
+{
+  simData <- list()
+  sampleMeansLists <- list()
+
+  for (i in 1:length(sampleRepetition)) {
+    simData[[i]] <- matrix(rexp(sampleRepetition[i]*sampleSize, lambda),
+                                   nrow = sampleSize, ncol = sampleRepetition[i])
+    sampleMeansLists[[i]]   <- colMeans(simData[[i]])
+  }
+
+  return (sampleMeansLists)
+}
+-->
+
+
+### Create Sample Means Distribution Plots
+
+To demonstrate the effect of the CLT on the sample means, document code will generate images using the $\textbf{\textit{imageMeanDistribution}}$ function. The function produces plots of the sample means distributions using the $\textit{sampleMeansLists}$ generated in the $\textbf{\textit{generateSampleMeansLists}}$. See Figure 1 a-d.
 
 \begin{wrapfigure}{r}{0.5\textwidth}
   \centering
@@ -686,17 +789,83 @@ To demonstrate the validity the CLT, the document code generate two images. The 
     \label{label}{Figure 1 a-d}
 \end{wrapfigure}
 
-observations
+Each plot has three overlays. The first overlay is a histogram of the $\textit{sampleMeansLists}$. Figure 1 a-d displays the density of the sample means as yellow bars. Since the CLT should produce a Gaussian distribution from the sample means, the values in each sample means list are converted to random variables from a standard normal distribution using the z-score transformation (eqn 1).
 
+\begin{equation}
+\frac {\bar {X_n} - \mu}{\sigma_{\bar X_n}} =  \frac {X_n - 1/\lambda} {\sigma_{40}} =  \frac {\bar {X_n} - 5} {\sigma_{40}}.
+\end{equation}
+
+The second overlay is an approximation of the probability density function (pdf) shown as a black line filled 
+
+
+<!-- 
+imageMeanDistribution <- function(sampleRepetition, sampleMeansLists, binRange)
+{
+  label <- c("a", "b","c","d")
+  pltList <- list()
+
+  transformToN <- function(sample) {
+    (sample - mu)/sampleSD
+  }
+
+  for (i in 1:length(sampleRepetition)) {
+    frame <- data.frame(pdf = c(unlist(lapply(sampleMeansLists[[i]], transformToN))))
+
+    pltList[[i]] <- ggplot(frame, aes(x = pdf)) +
+      geom_histogram(aes(y = after_stat(density)), breaks = binRange, fill = "#a0a0a0",
+                     color = "#e9ecef") +
+      geom_vline(aes(xintercept=mean(pdf)), color="red", linewidth = 0.5) +
+      geom_vline(aes(xintercept = 0.0), color="blue", linewidth = 0.5) +
+      geom_density(alpha = 0.2, color = "red", fill="red")  +
+      stat_function(fun = function (x)
+        dnorm(x, mean =  0, sd = 1),
+        color = "blue", fill = "blue",
+                geom = "area", alpha = 0.2) +
+      ggtitle(paste0("Sample Mean with n = ", sampleRepetition[i])) +
+      scale_x_continuous(limits = c(-5, 5), "Mean") +
+      scale_y_continuous(limits = c(-0.1, 0.81), "Density")
+  }
+
+  plt <- ggarrange(pltList[[1]], pltList[[2]], pltList[[3]], pltList[[4]],
+          labels = label,
+          ncol = 2, nrow = 2)
+
+  ggsave(plot = plt, width = 6.0, height = 4.0, dpi = 300,
+         filename = "distribution.png")
+
+}
+-->
+
+
+### Sample Mean Distribution 
+
+
+
+\newpage
 
 
 The sample distribution used in this 
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \centering
+    \includegraphics[width=\linewidth]{converge.png}
+\end{wrapfigure}
 
 
-\begin{equation}
-\frac {\bar {X_n} - \mu}{\sigma_{\bar X_n}},
-\end{equation}
+\newpage
 
+```{r printTable, echo = FALSE}
+resTable
+```
+
+
+
+\newpage
+
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \centering
+    \includegraphics[width=\linewidth]{teeth.png}
+\end{wrapfigure}
 
 <!-- the central limit theorem (CLT) establishes that, in many situations, for independent and identically distributed random variables, the sampling distribution of the standardized sample mean tends towards the standard normal distribution even if the original variables themselves are not normally distributed., which states, "in many situations, for independent and identically distributed random variables, the sampling distribution of the standardized sample mean tends towards the standard normal distribution even if the original variables themselves are not normally distributed[@scribbr]." -->
 
@@ -859,10 +1028,7 @@ The specific steps are:
 
 
 
-<!-- \begin{wrapfigure}{r}{0.3\textwidth} -->
-<!--   \centering -->
-<!--     \includegraphics[width=\linewidth]{converge.png} -->
-<!-- \end{wrapfigure} -->
+
 
 
 
