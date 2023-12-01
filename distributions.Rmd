@@ -14,51 +14,13 @@ output          : pdf_document
 header-includes :
   - \usepackage{wrapfig}
   - \usepackage{caption}
+  - \definecolor{adablue}{html}{00bfb2}
   - \captionsetup[figure]{font = footnotesize}
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-
-```{css echo=FALSE}
-.code {
-  background-color : #E9E9E9 ;
-  border           : 2px solid #000000;
-  font-weight      : bold;
-}
-
-.output {
-  padding          : 3px;
-  background-color : #FFFFF8;
-  border           : 1px solid #FFDAA2;
-  font-size        : 10; 
-}
-
-```
-
-<!-- To do this, the code will generate random samples of varying sizes from an exponential distribution, and each sample size will have forty replicates. All samples are taken from an exponential distribution with a fixed rate constant $\lambda = 0.2$. -->
-
-<!-- The code will find the average value of each sample and find the average value the forty replicates which is the mean of the sample means. It will also find the standard deviation of the sample means.  -->
-
-<!-- The final analysis generated histograms using one replicate from some select samples. -->
-
-<!-- the average of the sample means approaches the population mean.  -->
-
-
-<!-- Illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponential samples. You should -->
-
-<!-- Show the sample mean and compare it to the theoretical mean of the distribution. -->
-
-<!-- Show how variable the sample is (via variance) and compare it to the theoretical variance of the distribution. -->
-
-<!-- Show that the distribution is approximately normal. -->
-
-<!-- In point 3, focus on the difference between the distribution of a large collection of random exponentials and the distribution of a large collection of averages of 40 exponentials. -->
-
-
-<!-- The previous section showed that the mean and variance of the exponential function are $1/\lambda$ and $1/\lambda^2$ respectively. This means the Central Limit Theorem  -->
 
 ## Simulation setup
 
@@ -299,18 +261,6 @@ generateSampleMeansLists <- function(sampleRepetition)
   simData <- list()
   sampleMeansLists <- list()
 
-  # for (i in 1:length(sampleRepetition)) {
-  #   simData[[i]] <- matrix(rexp(sampleRepetition[i]*sampleSize, lambda),
-  #                                  nrow = sampleSize, ncol = sampleRepetition[i])
-  # }
-  # # ----------------------------------------------------------------------------------
-  # 
-  # for (i in 1:length(sampleRepetition)) {
-  #   sampleMeansLists[[i]]   <- colMeans(simData[[i]])
-  # }
-
-  # ----------------------------------------------------------------------------------
-
   for (i in 1:length(sampleRepetition)) {
     simData[[i]] <- matrix(rexp(sampleRepetition[i]*sampleSize, lambda),
                                    nrow = sampleSize, ncol = sampleRepetition[i])
@@ -324,15 +274,15 @@ generateSampleMeansLists <- function(sampleRepetition)
 
 ```
 
-### Generate Sample Mean Stats
+### Calculate Sample Mean Stats
 
-```{r generateSampleMeansStats, echo=FALSE}
+```{r calculateSampleMeansStats, echo=FALSE}
 
-generateSampleMeansStats <- function (sampleRepetition, sampleMeansLists)
+calculateSampleMeansStats <- function (sampleRepetition, sampleMeansLists, mu, var)
 {
   if(VERIFY_SAMPLE_STATS_SCR | FALSE)
   {
-    print("generateSampleMeansStats: verify inputs")
+    print("calculateSampleMeansStats: verify inputs")
     print(paste0("mu           = ", mu))
     print(paste0("var          = ", var))
     # print("sampleRepetition = ")
@@ -345,7 +295,7 @@ generateSampleMeansStats <- function (sampleRepetition, sampleMeansLists)
 
   # -----------------------------------------------------------------------------
   sampleStats <- data.frame(N_obs = integer(), mu = double(), muErr = double(), 
-                            variation = double(), varErr = double())  
+                            variation = double(), varErr = double())
   for (i in 1:length(sampleRepetition)) {
     xbar     <- mean(sampleMeansLists[[i]])
     variance <- var(sampleMeansLists[[i]])
@@ -354,8 +304,8 @@ generateSampleMeansStats <- function (sampleRepetition, sampleMeansLists)
                            c(sampleRepetition[i], xbar, abs((mu - xbar)/xbar),
                              variance, abs((var - variance)/variance)))
   }
-  colnames(sampleStats) <- c("NRep", "Mean", "Mean\nAbsolute\nError", 
-                             "Variance", "Variance\nAbsolute\nError")
+  colnames(sampleStats) <- c("NRep", "Mean", "Absolute\nError of\nMean", 
+                             "Variance", "Absolute\nError of\nVariance")
   # -----------------------------------------------------------------------------
   
   return (sampleStats)
@@ -370,10 +320,10 @@ if(RUN_VERIFY_STATS)
   sampleRepetition  <- c(10, 20, 30, 40)
 
   simData           <- generateSampleMeansLists(sampleRepetition, sampleSize, lambda)
-  sampleMeansLists <- calcSampleMeansLists(sampleRepetition, simData)
-  sampleMeansStats  <- generateSampleMeansStats(sampleRepetition, sampleMeansLists, mu, var)
-  print("RUN_VERIFY_STATS: sampleMeansStats")
-  print(sampleMeansStats)
+  sampleMeansLists  <- calcSampleMeansLists(sampleRepetition, simData)
+  sampleMeansStats  <- calculateSampleMeansStats(sampleRepetition, sampleMeansLists, mu, var)
+  # print("RUN_VERIFY_STATS: sampleMeansStats")
+  # print(sampleMeansStats)
 }
 
 ```
@@ -386,7 +336,7 @@ if(RUN_VERIFY_STATS)
 
 imageMeanDistribution <- function(sampleRepetition, sampleMeansLists, binRange)
 {
-  if(VERIFY_MEAN_DIST_IMG | FALSE)
+  if(VERIFY_MEAN_DIST_IMG | TRUE)
   {
     print("imageMeanDistribution: verify inputs")
     print(paste0("sampleRepetitions = ", sampleRepetition))
@@ -395,9 +345,9 @@ imageMeanDistribution <- function(sampleRepetition, sampleMeansLists, binRange)
     print(paste0("mu                = ", mu))
     print(paste0("variance          = ", variance))
     print(paste0("sampleSD          = ", sampleSD))
-    # print("binRange = ")
-    # print(binRange)
-    print("Test binRange separately")
+    print("binRange = ")
+    print(binRange)
+    # print("Test binRange separately")
     # print("sampleMeansLists = ")
     # print(sampleMeansLists)
     print("Test sampleMeansLists separately")
@@ -407,16 +357,18 @@ imageMeanDistribution <- function(sampleRepetition, sampleMeansLists, binRange)
   pltList <- list()
 
   transformToN <- function(sample) {
-    (sample - mu)/sampleSD
+    (sample - mu)/sampleSD + mu
+    # sample
   }
 
   for (i in 1:length(sampleRepetition)) {
     frame <- data.frame(pdf = c(unlist(lapply(sampleMeansLists[[i]], transformToN))))
 
-    if(VERIFY_MEAN_DIST_IMG | TRUE)
+    if(VERIFY_MEAN_DIST_IMG | FALSE)
     {
       print("imageMeanDistribution: frame")
       print(frame)
+      print(sampleMeansLists[[i]])
     }
 
     if(VERIFY_MEAN_DIST_IMG_FILE | FALSE)
@@ -424,26 +376,38 @@ imageMeanDistribution <- function(sampleRepetition, sampleMeansLists, binRange)
       print("generateMeanDist: store in simData_#.csv")
       filename <- paste0("sampleMeansListsIMG_", sampleRepetition[i], ".csv")
       write.csv(sampleMeansLists[[i]], filename, row.names=FALSE)
-      
+
       filename2 <- paste0("frame", sampleRepetition[i], ".csv")
       write.csv(frame, filename2, row.names=FALSE)
-
     }
 
     pltList[[i]] <- ggplot(frame, aes(x = pdf)) +
-      geom_histogram(aes(y = after_stat(density)), breaks = binRange, fill = "#ffc845",
-                     color = "#e9ecef") +
-      geom_vline(aes(xintercept=mean(pdf)), color="#000000", linewidth = 0.5) +
-      geom_vline(aes(xintercept = 0.0), color="#00bfb2", linewidth = 0.5) +
-      geom_density(alpha = 0.2, color = "#000000", fill="#000000")  +
-      stat_function(fun = function (x)
-        dnorm(x, mean =  0, sd = 1),
-        color = "#00bfb2", fill = "#00bfb2",
-                geom = "area", alpha = 0.2) +
+      stat_function(fun = function (x) dnorm(x, mean =  5, sd = 1),
+        color = "#00bfb2", fill = "#00bfb2", geom = "area", alpha = 0.8) +
+      geom_density(alpha = 0.3, color = "#000000", fill="#000000")  +
+      geom_histogram(aes(y = after_stat(density)), breaks = binRange, 
+                     alpha = 0.2, color = "#505050", linewidth = 0.2) +
+      geom_vline(aes(xintercept=mean(pdf)), color="#000000", linewidth = 0.5, linetype = 2) +
+      geom_vline(aes(xintercept = 0.0), color="#00bfb2", linewidth = 0.5, linetype = 2) +
+      geom_hline(yintercept=0, color="#000000", linewidth = 0.5) +
       ggtitle(paste0("Sample Mean with n = ", sampleRepetition[i])) +
-      scale_x_continuous(limits = c(-5, 5), "Mean") +
-      scale_y_continuous(limits = c(-0.1, 0.81), "Density")
+      scale_x_continuous(limits = c(-5, 10), "Mean") +
+      scale_y_continuous(limits = c(-0.1, 1), "Density")
   }
+
+  #   pltList[[i]] <- ggplot(frame, aes(x = pdf)) +
+  #     stat_function(fun = function (x) dnorm(x, mean =  0, sd = 1),
+  #       color = "#00bfb2", fill = "#00bfb2", geom = "area", alpha = 0.8) +
+  #     geom_density(alpha = 0.3, color = "#000000", fill="#000000")  +
+  #     geom_histogram(aes(y = after_stat(density)), breaks = binRange, 
+  #                    alpha = 0.2, color = "#505050", linewidth = 0.2) +
+  #     geom_vline(aes(xintercept=mean(pdf)), color="#000000", linewidth = 0.5, linetype = 2) +
+  #     geom_vline(aes(xintercept = 0.0), color="#00bfb2", linewidth = 0.5, linetype = 2) +
+  #     geom_hline(yintercept=0, color="#000000", linewidth = 0.5) +
+  #     ggtitle(paste0("Sample Mean with n = ", sampleRepetition[i])) +
+  #     scale_x_continuous(limits = c(-5, 5), "Mean") +
+  #     scale_y_continuous(limits = c(-0.1, 0.81), "Density")
+  # }
 
   plt <- ggarrange(pltList[[1]], pltList[[2]], pltList[[3]], pltList[[4]],
           labels = label,
@@ -457,7 +421,7 @@ imageMeanDistribution <- function(sampleRepetition, sampleMeansLists, binRange)
 if(RUN_MEAN_DIST_IMG)
 {
   sampleRepetition  <- c(10, 20, 30, 1000)
-  binRange          <- seq(-3.0, 3.0, by = 0.5)
+  binRange          <- seq(-3.0, 10.0, by = 0.5)
 
   simData           <- generateSampleMeansLists(sampleRepetition)
   sampleMeansLists <- generateMeanDist(sampleRepetition, simData)
@@ -478,7 +442,7 @@ imageConvergencePlot <- function(sampleRepetition, sampleStats)
 {
   if(VERIFY_CONVERGE_IMG | FALSE)
   {
-    print("generateSampleMeansStats: verify inputs")
+    print("calculateSampleMeansStats: verify inputs")
     print(paste0("mu           = ", mu))
     print(paste0("var          = ", var))
     # print("sampleRepetition = ")
@@ -489,7 +453,6 @@ imageConvergencePlot <- function(sampleRepetition, sampleStats)
     # print("Test sampleStats separately")
   }
 
-  
   sampleStats <- cbind(sampleStats, OffsetVar = sampleStats$Variance + 5)
   # names(sampleStats) <- c("size", "mean", "variance")
 
@@ -543,14 +506,10 @@ generateConvergeTable <- function (sampleMeansStats)
   # -----------------------------------------------------------------------------
 
   resTable <- knitr::kable(sampleMeansStats, "latex",
-    caption = paste0("table"),
-    digits = 3, align = "llll",
-    # col.names = c("NObs", "Mean", "Mean\nError", "Var", "Var Error"), 
-    row.names = TRUE
-    ) %>%
+    caption = paste0("table"), digits = 3, align = "llll", row.names = TRUE) %>%
     kable_styling(bootstrap_options = c("striped", "hover"),
                   full_width = F,
-                  position = "left",
+                  # position = "left",
                   font_size = 8) %>%
     column_spec(column=1, width="0.2cm") %>%
     column_spec(column=2, width="1.0cm") %>%
@@ -574,7 +533,7 @@ if(RUN_VERIFY_CONVERGE_TABLE)
   sampleRepetition  <- c(10, 100, 1000, 10000, 100000, 1000000)
 
   simData           <- generateSampleMeansLists(sampleRepetition, sampleSize, lambda)
-  sampleMeansLists <- calcSampleMeansLists(sampleRepetition, simData)
+  sampleMeansLists  <- calcSampleMeansLists(sampleRepetition, simData)
   sampleMeansStats  <- getSampleMeansStats(sampleRepetition, sampleMeansLists, mu, var)
   resTable          <- generateConvergeTable(sampleMeansStats)
 
@@ -718,24 +677,25 @@ if(EXECUTE & TRUE)
 
   # histogram plots
   sampleRepetition  <- c(10, 30, 40, 1000)
-  binRange          <- seq(-3.0, 3.0, by = 0.25)
-  # simData           <- generateSampleMeansLists(sampleRepetition)
-  # sampleMeansLists <- generateMeanDist(sampleRepetition, simData)
+  binRange          <- seq(2.0, 9.0, by = 0.25)
   sampleMeansLists <- generateSampleMeansLists(sampleRepetition)
   imageMeanDistribution(sampleRepetition, sampleMeansLists, binRange)
 
   # convergence plot
   sampleRepetition <- c(10, 20, 30, 40, 100, 1000, 10000, 100000, 1000000)
-  # simData <- generateSampleMeansLists(sampleRepetition)
-  # sampleMeansLists <- generateMeanDist(sampleRepetition, simData)
-  sampleMeansLists <- generateSampleMeansLists(sampleRepetition)
 
-  sampleMeansStats<- generateSampleMeansStats(sampleRepetition, sampleMeansLists)
-  sampleStats      <- generateSampleMeansStats(sampleRepetition, sampleMeansLists)
-  imageConvergencePlot(sampleRepetition, sampleStats)
+  
+  sampleMeansLists <- generateSampleMeansLists(sampleRepetition)
+  sampleMeansStats <- calculateSampleMeansStats(sampleRepetition, sampleMeansLists, mu, var)
+  # sampleStats      <- calculateSampleMeansStats(sampleRepetition, sampleMeansLists)
+  imageConvergencePlot(sampleRepetition, sampleMeansStats)
 
   resTable <- generateConvergeTable(sampleMeansStats)
   
+  # sampleMeansLists <- calcSampleMeansLists(sampleRepetition, simData)
+  # sampleMeansStats  <- getSampleMeansStats(sampleRepetition, sampleMeansLists, mu, var)
+  # resTable          <- generateConvergeTable(sampleMeansStats)
+
   # tooth plot
   # ToothGrowth <- generateToothData(ToothGrowth)
   # generateToothImage(ToothGrowth)
@@ -761,27 +721,7 @@ The first step in the generation of both images is the generation of samples mea
 
 The $\textit{sampleMeansLists}$ contain the cleaned raw data.
 
-
-<!--
-generateSampleMeansLists <- function(sampleRepetition)
-{
-  simData <- list()
-  sampleMeansLists <- list()
-
-  for (i in 1:length(sampleRepetition)) {
-    simData[[i]] <- matrix(rexp(sampleRepetition[i]*sampleSize, lambda),
-                                   nrow = sampleSize, ncol = sampleRepetition[i])
-    sampleMeansLists[[i]]   <- colMeans(simData[[i]])
-  }
-
-  return (sampleMeansLists)
-}
--->
-
-
 ### Create Sample Means Distribution Plots
-
-To demonstrate the effect of the CLT on the sample means, document code will generate images using the $\textbf{\textit{imageMeanDistribution}}$ function. The function produces plots of the sample means distributions using the $\textit{sampleMeansLists}$ generated in the $\textbf{\textit{generateSampleMeansLists}}$. See Figure 1 a-d.
 
 \begin{wrapfigure}{r}{0.5\textwidth}
   \centering
@@ -789,69 +729,32 @@ To demonstrate the effect of the CLT on the sample means, document code will gen
     \label{label}{Figure 1 a-d}
 \end{wrapfigure}
 
-Each plot has three overlays. The first overlay is a histogram of the $\textit{sampleMeansLists}$. Figure 1 a-d displays the density of the sample means as yellow bars. Since the CLT should produce a Gaussian distribution from the sample means, the values in each sample means list are converted to random variables from a standard normal distribution using the z-score transformation (eqn 1).
+To demonstrate the effect of the CLT on the sample means, the document code generates an image using the $\textbf{\textit{imageMeanDistribution}}$ function. The image consists of four graphs for each of the sample means distributions stored in $\textit{sampleMeansLists}$. Figure 1 (a-d) are the plots for repeat values of n=10, 30, 40, and 1000.
+
+Before the creating the graphs, the document code converts the sample means distribution to a standard normal normal using the z-score transformation (eqn1).
 
 \begin{equation}
 \frac {\bar {X_n} - \mu}{\sigma_{\bar X_n}} =  \frac {X_n - 1/\lambda} {\sigma_{40}} =  \frac {\bar {X_n} - 5} {\sigma_{40}}.
 \end{equation}
 
-The second overlay is an approximation of the probability density function (pdf) shown as a black line filled 
+The distribution associated by the transformed sample means should approach a standard normal distribution as the value n increases. To demonstrate the visual similarity between the distributions, it is only necessary to compare the size and shape of both.
 
+Figure 1 a-d compares the distributions by overlaying the $\textcolor{red}sample means distribution in black} and the $\textcolor{red}standard normal distribution in blue}. The graph also includes the histogram created by the corresponding $\textcolor{red}sample means distribution as a set of gray bars} and two dashed lines. $\textcolor{red}{The black line is the mean of the sample means distribution}.
 
-<!-- 
-imageMeanDistribution <- function(sampleRepetition, sampleMeansLists, binRange)
-{
-  label <- c("a", "b","c","d")
-  pltList <- list()
+Based on the following observations, the graphs verify that as the number of repetitions increases, the sample means distribution approaches the standard normal distribution. 
 
-  transformToN <- function(sample) {
-    (sample - mu)/sampleSD
-  }
+1) The area of blue shading and the area of black shading decreases as the number of repetitions increases, 
+2) the shape sample means approaches the shape of the standard normal as the number of repetitions increases,
+3) the size of the sample means distribution approaches the size of the standard noraml distribution as the number of repetitions increases.
 
-  for (i in 1:length(sampleRepetition)) {
-    frame <- data.frame(pdf = c(unlist(lapply(sampleMeansLists[[i]], transformToN))))
+### Quantitative Comparison of Sample Means and Standard Normal Distributions
+<!-- \begin{wrapfigure}{l}{0.5\textwidth} -->
+<!--   \centering -->
+<!--     \includegraphics[width=\linewidth]{converge.png} -->
+<!-- \end{wrapfigure} -->
 
-    pltList[[i]] <- ggplot(frame, aes(x = pdf)) +
-      geom_histogram(aes(y = after_stat(density)), breaks = binRange, fill = "#a0a0a0",
-                     color = "#e9ecef") +
-      geom_vline(aes(xintercept=mean(pdf)), color="red", linewidth = 0.5) +
-      geom_vline(aes(xintercept = 0.0), color="blue", linewidth = 0.5) +
-      geom_density(alpha = 0.2, color = "red", fill="red")  +
-      stat_function(fun = function (x)
-        dnorm(x, mean =  0, sd = 1),
-        color = "blue", fill = "blue",
-                geom = "area", alpha = 0.2) +
-      ggtitle(paste0("Sample Mean with n = ", sampleRepetition[i])) +
-      scale_x_continuous(limits = c(-5, 5), "Mean") +
-      scale_y_continuous(limits = c(-0.1, 0.81), "Density")
-  }
+Figure 1 visually compares the sample means distribution to the standard normal distribution. As an added layer of validation, Table 1 show the convergence the sample means to the standard normal distribution quantitatively. 
 
-  plt <- ggarrange(pltList[[1]], pltList[[2]], pltList[[3]], pltList[[4]],
-          labels = label,
-          ncol = 2, nrow = 2)
-
-  ggsave(plot = plt, width = 6.0, height = 4.0, dpi = 300,
-         filename = "distribution.png")
-
-}
--->
-
-
-### Sample Mean Distribution 
-
-
-
-\newpage
-
-
-The sample distribution used in this 
-\begin{wrapfigure}{r}{0.5\textwidth}
-  \centering
-    \includegraphics[width=\linewidth]{converge.png}
-\end{wrapfigure}
-
-
-\newpage
 
 ```{r printTable, echo = FALSE}
 resTable
@@ -859,13 +762,11 @@ resTable
 
 
 
-\newpage
 
-
-\begin{wrapfigure}{r}{0.5\textwidth}
-  \centering
-    \includegraphics[width=\linewidth]{teeth.png}
-\end{wrapfigure}
+<!-- \begin{wrapfigure}{r}{0.5\textwidth} -->
+<!--   \centering -->
+<!--     \includegraphics[width=\linewidth]{teeth.png} -->
+<!-- \end{wrapfigure} -->
 
 <!-- the central limit theorem (CLT) establishes that, in many situations, for independent and identically distributed random variables, the sampling distribution of the standardized sample mean tends towards the standard normal distribution even if the original variables themselves are not normally distributed., which states, "in many situations, for independent and identically distributed random variables, the sampling distribution of the standardized sample mean tends towards the standard normal distribution even if the original variables themselves are not normally distributed[@scribbr]." -->
 
