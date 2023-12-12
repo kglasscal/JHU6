@@ -96,7 +96,7 @@ library(matrixStats)
 library(data.table)
 library(sfsmisc)
 
-set.seed(2063)
+set.seed(8523)
 
 LAMBDA       <- 0.2
 SAMPLE_SIZE   <- 40
@@ -118,153 +118,11 @@ if(FALSE)
 }
 
 ```
-<!-- ###################################################################################### -->
-<!-- ###################################################################################### -->
-<!-- ###################################################################################### -->
 
-```{r generateSimulationData, echo=FALSE}
-
-# generateSimulationData <- function(sampleRepetition)
-# {
-#   if(RUN_SIM_VERIFY & VERIFY_MEAN_DISTRIB_SCR | FALSE)
-#   {
-#     print("generateSampleMeansLists: verify inputs")
-#     print(paste0("sampleRepetitions = ", sampleRepetition))
-#     print(paste0("SAMPLE_SIZE   = ", SAMPLE_SIZE))
-#     print(paste0("LAMBDA       = ", LAMBDA))
-#   }
-# 
-#   # ----------------------------------------------------------------------------------
-#   simData <- list()
-# 
-#   for (i in 1:length(sampleRepetition)) {
-#     simData[[i]] <- matrix(rexp(sampleRepetition[i]*SAMPLE_SIZE, LAMBDA),
-#                                    nrow = SAMPLE_SIZE, ncol = sampleRepetition[i])
-#   }
-# 
-# 
-#   # ----------------------------------------------------------------------------------
-# 
-#   if(RUN_SIM_VERIFY & VERIFY_SOURCE_FILE | FALSE)
-#   {
-#     print("generateSampleMeansLists: store in simData_#.csv")
-#     filename <- paste0("simData_", sampleRepetition[i], ".csv")
-#     write.csv(sampleMatrix, filename, row.names=FALSE)
-#   }
-# 
-#   if(RUN_SIM_VERIFY & VERIFY_SOURCE_SCR | FALSE)
-#   {
-#     print("generateSampleMeansLists: ")
-#     print(simData)
-#   }
-# 
-#   return (simData)
-# }
-# 
-# if(RUN_SIM_VERIFY)
-# {
-#   sampleRepetition  <- c(10, 20, 30, 40)
-# 
-#   simData <- generateSampleMeansLists(sampleRepetition)
-# 
-#   print("RUN_SIM_VERIFY: simData")
-#   print(simData)
-# }
-
-```
-
-<!-- # Part I -->
-
-<!-- ### Generate Mean Distributions -->
-
-```{r generateMeanDist, echo=FALSE}
-
-# generateMeanDist <- function(sampleRepetition, simData)
-# {
-#   if(VERIFY_MEAN_DISTRIB_SCR | FALSE)
-#   {
-#     print("generateMeanDist: verify inputs")
-#     print(paste0("sampleRepetitions = ", sampleRepetition))
-#     print(paste0("LAMBDA            = ", LAMBDA))
-#     print(paste0("MU                = ", MU))
-#     print(paste0("VARIANCE            = ", VARIANCE))
-#     print(paste0("SAMPLE_ERR         = ", SAMPLE_ERR))
-#     # print("simData = ")
-#     # print(simData)
-#     print("Test sim data separately")
-#   }
-# 
-#   # ----------------------------------------------------------------------------------
-#   # distributions     <- list()
-#   sampleMeansLists <- list()
-# 
-#   for (i in 1:length(sampleRepetition)) {
-#     sampleMeansLists[[i]]   <- colMeans(simData[[i]])
-#   }
-# #
-# #   transformToN <- function(sample) {
-# #     (sample - MU)/SAMPLE_ERR
-# #   }
-# #
-# #   for (i in 1:length(sampleRepetition)) {
-# #     sampleMeansLists[[i]]   <- lapply(distributions[[i]], transformToN)
-# #     sampleMeansLists[[i]]   <- c(unlist(sampleMeansLists[[i]]))
-# #   }
-# 
-#   if(VERIFY_MEAN_DISTRIB_SCR | FALSE)
-#   {
-#     for (i in 1:length(sampleRepetition)) {
-#       # print("distributions = ")
-#       # print(distributions[i])
-#       print("sampleMeansLists = ")
-#       print(sampleMeansLists[i])
-#     }
-#   }
-# 
-#   # ----------------------------------------------------------------------------------
-# 
-#   if(VERIFY_MEAN_DISTRIB_FILE | FALSE)
-#   {
-#     print("generateMeanDist: store in simData_#.csv")
-#     for (i in 1:length(sampleRepetition)) {
-#       filename <- paste0("sampleMeansLists_", sampleRepetition[i], ".csv")
-#       write.csv(sampleMeansLists[[i]], filename, row.names=FALSE)
-# 
-#       filename2 <- paste0("distributions_", sampleRepetition[i], ".csv")
-#       write.csv(distributions[[i]], filename2, row.names=FALSE)
-#     }
-#   }
-# 
-#   if(VERIFY_MEAN_DISTRIB_SCR | FALSE)
-#   {
-#     print("generateMeanDist: sampleMeansLists")
-#     print(sampleMeansLists)
-#   }
-# 
-#   return (sampleMeansLists)
-# }
-# 
-# if(RUN_VERIFY_MEAN_DISTRIB)
-# {
-#   sampleRepetition  <- c(10, 20, 30, 40)
-# 
-#   simData           <- generateSampleMeansLists(sampleRepetition)
-#   sampleMeansLists <- generateMeanDist(sampleRepetition, simData)
-#   # sampleMeansLists <- generateSampleMeansLists(sampleRepetition)
-# 
-#   print("RUN_VERIFY_MEAN_DISTRIB: sampleMeansLists")
-#   print(sampleMeansLists)
-# }
-
-```
-
-<!-- ###################################################################################### -->
-<!-- ###################################################################################### --> 
-<!-- ###################################################################################### -->
 
 ### Generate Exponential Data
 
-```{r generateExponentialData,  echo=FALSE}
+```{r generateExponentialData,  echo = FALSE}
 generateExponentialData <- function(sample)
 {
   simData <- matrix(rexp(sample*SAMPLE_SIZE, LAMBDA), nrow = SAMPLE_SIZE, ncol = sample)
@@ -326,124 +184,6 @@ calculateSampleMeansStats <- function (sampleRepetition)
 
 ```
 
-
-# Part II
-
-### Teeth data
-
-```{r generateToothData, echo=FALSE}
-
-generateToothData <- function (ToothGrowth)
-{
-  if(RUN_VERIFY_TOOTH_DATA | FALSE)
-  {
-    print("generateToothData: verify inputs")
-    print("ToothGrowth = ")
-    print(ToothGrowth)
-  }
-
-  # -----------------------------------------------------------------------------
-  allFactor   <- as.factor(paste0(ToothGrowth$supp, "-", ToothGrowth$dose))
-  ToothGrowth <- cbind(ToothGrowth, allFactor)
-  # -----------------------------------------------------------------------------
-
-  if(VERIFY_TOOTH_DATA & RUN_VERIFY_TOOTH_DATA | FALSE)
-  {
-    print("generateToothData: output")
-    print("ToothGrowth = ")
-    print(ToothGrowth)
-  }
-
-  return (ToothGrowth)
-
-}
-
-if(RUN_VERIFY_TOOTH_DATA | FALSE)
-{
-  doses      = c(0.5, 1.0, 2.0) # mg/day
-  supplement = c("OJ", "AA")    # supplement of AA, OJ - Orange Juice, AA - Ascorbic Acid
-
-  nPigs    <- 60
-  nLength  <- nPigs/(length(doses)*length(supplement))
-  nBins    <- nPigs/nLength
-  # bw       <- c(3, 3, 4, 3, 3, 4)
-
-  ToothGrowth <- generateToothData(ToothGrowth)
-  print("RUN_VERIFY_TOOTH_DATA: ToothGrowth data")
-  print(ToothGrowth)
-}
-
-
-```
-
-### Generate Tooth Image
-
-<!-- , results = 'hide' -->
-
-```{r echo = FALSE, warning = FALSE, fig.dim = c(8, 4)}
-
-generateToothImage <- function (ToothGrowth)
-{
-  if(VERIFY_TOOTH_IMG | FALSE)
-  {
-    print("generateToothImage: verify inputs")
-    print("ToothGrowth = ")
-    print(ToothGrowth)
-  }
-
-  ToothGrowth$dotColor <- c(rep("blue",10),
-                            rep("green",10),
-                            rep("orange",10),
-                            rep("purple",10),
-                            rep("yellow",10),
-                            rep("red",10))
-  
-  plt <- ggplot(ToothGrowth, aes(x = allFactor, y = len)) +
-    geom_boxplot() +
-    geom_dotplot(binaxis='y',
-                 stackdir='center',
-                 dotsize = 0.5,
-                 fill = ToothGrowth$dotColor) +
-    labs(title="Effect of Vitamin C on Tooth Growth",
-         subtitle="Supplement and Dosage",
-         caption="Source: C. I. Bliss (1952). The Statistics of Bioassay. Academic Press.",
-         x="Supplement (OJ, VC), Dosage(0.5, 1.0, 2.0)",
-         y="Tooth Length")
-  
-  
-  ggsave(plot = plt, width = 4.0, height = 3.5, dpi = 300,
-         filename = "teeth.png")
-}
-
-if(RUN_VERIFY_TOOTH_IMG)
-{
-  ToothGrowth <- generateToothData(ToothGrowth)
-  generateToothImage(ToothGrowth)
-  print("RUN_VERIFY_TOOTH_IMG: check image")
-}
-
-```
-
-
-
-```{r teethData, echo=FALSE}
-
-# Now in the second portion of the project, we're going to analyze the ToothGrowth data in the R datasets package.
-# Load the ToothGrowth data and perform some basic exploratory data analyses
-
-# Provide a basic summary of the data.
-
-# Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)
-
-# State your conclusions and the assumptions needed for your conclusions.
-
-# The response is the length of odontoblasts (cells responsible for tooth
-# growth) in 60 guinea pigs. Each animal received one of three dose levels of
-# vitamin C (0.5, 1, and 2 mg/day) by one of two delivery methods, orange juice
-# or ascorbic acid (a form of vitamin C and coded as AA).
-# https://www.rdocumentation.org/packages/datasets/versions/3.6.2/topics/ToothGrowth
-
-```
 
 ## Images
 
@@ -549,34 +289,19 @@ normalDistributionImages <- function(sampleRepetition)
   simData  <- list()
   colData  <- list()
   sampleMeans  <- list()
-  sourceData  <- list()
-  # for (i in 1:length(sampleRepetition)) {
-  #   simData[[i]]   <- generateExponentialData(sampleRepetition[i])
-  #   colData[[i]]   <- colMeans(simData[[i]])
-  # }
-  # 
-  # for (i in 1:length(sampleRepetition)) {
-  #   sampleMeans[[i]] <- data.frame(pdf = c(unlist(lapply(colData[[i]], transformToN))))
-  #   sourceData[[i]]  <- data.frame(pdf = c(unlist(lapply(simData[[i]], transformToN))))
-  # }
+  # sourceData  <- list()
+
   for (i in 1:length(sampleRepetition)) {
-    # simData[[i]]   <- generateExponentialData(sampleRepetition[i])
-    # colData[[i]]   <- colMeans(simData[[i]])
-    # sampleMeans[[i]] <- data.frame(pdf = c(unlist(lapply(colData[[i]], transformToN))))
-    # sourceData[[i]]  <- data.frame(pdf = c(unlist(lapply(simData[[i]], transformToN))))
     simData[[i]]   <- generateExponentialData(sampleRepetition[i])
     colData[[i]]   <- colMeans(simData[[i]])
     sampleMeans[[i]] <- data.frame(pdf = c(unlist(lapply(colData[[i]], transformToN))))
-    sourceData[[i]]  <- data.frame(pdf = c(unlist(lapply(simData[[i]], transformToN))))
-  # }
-  # 
-  # for (i in 1:length(sampleRepetition)) {
-
+    # sourceData[[i]]  <- data.frame(pdf = c(unlist(lapply(simData[[i]], transformToN))))
+    
     if(VERIFY_MEAN_DIST_IMG | FALSE)
     {
       print("imageNormalDistribution: sampleMeans")
       print(sampleMeans[[i]])
-      print(sourceData[[i]])
+      # print(sourceData[[i]])
     }
 
     if(VERIFY_MEAN_DIST_IMG_FILE | FALSE)
@@ -595,8 +320,6 @@ normalDistributionImages <- function(sampleRepetition)
       geom_density(alpha = 0.3, color = "#000000", fill="#000000")  +
       geom_histogram(aes(y = after_stat(density)), breaks = binRange,
                      alpha = 0.2, color = "#505050", linewidth = 0.2) +
-      # geom_density(data = sourceData[[i]], alpha = 0.3, color = "#000000", fill="#000000")  +
-      # lines(density(sourceData$pdf), col="blue", lwd=2) +
       geom_vline(aes(xintercept=mean(pdf)), color="#000000", linewidth = 0.5, linetype = 2) +
       geom_vline(aes(xintercept = MU), color="#00bfb2", linewidth = 0.5, linetype = 2) +
       geom_hline(yintercept=0, color="#000000", linewidth = 0.5) +
@@ -624,12 +347,7 @@ if(RUN_MEAN_DIST_IMG)
 
 ```
 
-
-### Create Convergence Image
-
-
 ## Tables
-
 
 ### generateConvergeTable
 
@@ -684,6 +402,404 @@ if(RUN_VERIFY_CONVERGE_TABLE)
 ```
 
 
+# Part II
+
+
+```{r teethData, echo=FALSE}
+
+# Now in the second portion of the project, we're going to analyze the ToothGrowth data in the R datasets package.
+# Load the ToothGrowth data and perform some basic exploratory data analyses
+
+# Provide a basic summary of the data.
+
+# Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)
+
+# State your conclusions and the assumptions needed for your conclusions.
+
+# The response is the length of odontoblasts (cells responsible for tooth
+# growth) in 60 guinea pigs. Each animal received one of three dose levels of
+# vitamin C (0.5, 1, and 2 mg/day) by one of two delivery methods, orange juice
+# or ascorbic acid (a form of vitamin C and coded as AA).
+# https://www.rdocumentation.org/packages/datasets/versions/3.6.2/topics/ToothGrowth
+
+```
+
+### Set Tooth Data
+
+```{r setToothData, echo=FALSE}
+setToothData <- function (ToothGrowth)
+{
+  if(RUN_VERIFY_TOOTH_DATA | FALSE)
+  {
+    print("setToothData: verify inputs")
+    print("ToothGrowth = ")
+    print(ToothGrowth)
+  }
+  if(RUN_VERIFY_TOOTH_DATA | FALSE)
+  {
+    print("ToothGrowth unique values")
+    suppValues <- c(unique(ToothGrowth$supp))
+    print(suppValues[2])
+    print(class(suppValues))
+  }
+
+  columnNames <- unique(paste0(ToothGrowth$supp, '-', ToothGrowth$dose))
+  toothDF     <- data.frame(matrix(nrow = 10, ncol = 0))
+  for ( i in 1:length(columnNames)) {
+    toothDF     <- cbind(toothDF, ToothGrowth[(i - 1) * 10 + 1 : 10, 1])
+  }
+  colnames(toothDF) <- columnNames
+  
+
+  if(VERIFY_TOOTH_DATA & RUN_VERIFY_TOOTH_DATA | TRUE)
+  {
+    print("setToothData: output")
+    # print("ToothGrowth = ")
+    # print(ToothGrowth)
+    # print(ToothGrowth[1:10,1])
+    print("toothDF = ")
+    print(toothDF)
+
+    # subtest <- c(unlist(toothDF[1]), unlist(toothDF[2]))
+    # print(subtest)
+    # print(summary(subtest))
+  }
+
+  return (toothDF)
+
+}
+
+if(RUN_VERIFY_TOOTH_DATA | FALSE)
+{
+  doses      = c(0.5, 1.0, 2.0) # mg/day
+  supplement = c("OJ", "AA")    # supplement of AA, OJ - Orange Juice, AA - Ascorbic Acid
+
+  nPigs    <- 60
+  nLength  <- nPigs/(length(doses)*length(supplement))
+  nBins    <- nPigs/nLength
+  # bw       <- c(3, 3, 4, 3, 3, 4)
+
+  ToothGrowth <- setToothData(ToothGrowth)
+  print("RUN_VERIFY_TOOTH_DATA: ToothGrowth data")
+  print(ToothGrowth)
+}
+```
+
+### Generate Tooth Image
+
+<!-- , results = 'hide' -->
+
+```{r echo = FALSE, warning = FALSE, fig.dim = c(8, 4)}
+
+generateToothSuppImage <- function (ToothGrowth)
+{
+  if(VERIFY_TOOTH_IMG | FALSE)
+  {
+    print("generateToothImage: verify inputs")
+    print("ToothGrowth = ")
+    print(ToothGrowth)
+  }
+
+  ToothGrowth$dotColor <- c(rep("blue",10),
+                            rep("green",10),
+                            rep("orange",10),
+                            rep("purple",10),
+                            rep("yellow",10),
+                            rep("red",10))
+  
+  plt <- ggplot(ToothGrowth, aes(x = supp, y = len)) +
+    geom_boxplot() +
+    geom_dotplot(binaxis='y',
+                 stackdir='center',
+                 dotsize = 0.7,
+                 fill = ToothGrowth$dotColor) +
+    labs(title="Effect of Vitamin C on Tooth Growth",
+         subtitle="Supplement and Dosage",
+         caption="Source: C. I. Bliss (1952). The Statistics of Bioassay. Academic Press.",
+         x="Supplement (OJ, VC), Dosage(0.5, 1.0, 2.0)",
+         y="Tooth Length")
+  
+  
+  ggsave(plot = plt, width = 4.0, height = 3.5, dpi = 300,
+         filename = "tooth-supp.png")
+}
+
+### Generate Tooth Image
+
+generateToothImage <- function (ToothGrowth)
+{
+  if(VERIFY_TOOTH_IMG | FALSE)
+  {
+    print("generateToothImage: verify inputs")
+    print("ToothGrowth = ")
+    print(ToothGrowth)
+  }
+
+  ToothGrowth$dotColor <- c(rep("blue",10),
+                            rep("green",10),
+                            rep("orange",10),
+                            rep("purple",10),
+                            rep("yellow",10),
+                            rep("red",10))
+  
+  plt <- ggplot(ToothGrowth, aes(x = as.factor(dose), y = len)) +
+    geom_boxplot() +
+    geom_dotplot(binaxis='y',
+                 stackdir='center',
+                 dotsize = 0.7,
+                 fill = ToothGrowth$dotColor) +
+    labs(title="Effect of Vitamin C on Tooth Growth",
+         subtitle="Supplement and Dosage",
+         caption="Source: C. I. Bliss (1952). The Statistics of Bioassay. Academic Press.",
+         x="Supplement (OJ, VC), Dosage(0.5, 1.0, 2.0)",
+         y="Tooth Length")
+  
+  
+  ggsave(plot = plt, width = 4.0, height = 3.5, dpi = 300,
+         filename = "tooth.png")
+}
+
+if(RUN_VERIFY_TOOTH_IMG)
+{
+  ToothGrowth <- setToothData(ToothGrowth)
+  generateToothImage(ToothGrowth)
+  print("RUN_VERIFY_TOOTH_IMG: check image")
+}
+
+```
+
+
+### Summaries
+
+### Generate Tooth Summaries
+
+```{r generateToothSummaries, echo = TRUE}
+
+ # Hypotheses:
+ #  Difference of tooth length do to VC or OJ is zero
+ #  Difference between {0.5, 1.0}, {0.5, 2.0},  {1.0, 2.0} are all zero
+ # 
+ # The number of observations for each sample are the same (supplement = 30, dose = 20)
+ # Find the difference in mean, and variance
+ # 
+ # t.test(father.son$sheight - father.son$fheight)
+ # 
+ # 
+
+generateToothSummaries <- function(toothDF)
+{
+  if(VERIFY_TOOTH_SUMMARY | FALSE)
+  {
+    print("generateToothSummaries: verify inputs")
+    print(paste0("ToothGrowth[[1]]  = ", toothDF[1:10,]))
+    print(paste0("ToothGrowth  = ", toothDF))
+  }
+
+  protocol <- c("OJ v. VC", "0.5 v. 1.0", "0.5 v. 2.0", "1.0 v. 2.0",
+                unique(paste0(toothDF$supp, '-', toothDF$dose))
+  )
+  print(paste0("protocol ", protocol))
+
+  fullSummary <- summary(toothDF)
+  dataSet <- list()
+  ttest   <- list()
+
+  vc.Data    <- c(unlist(toothDF[[1]]), unlist(toothDF[[2]]), unlist(toothDF[[3]]))
+  oj.Data    <- c(unlist(toothDF[[4]]), unlist(toothDF[[5]]), unlist(toothDF[[6]]))
+  d.0_5.Data <- c(unlist(toothDF[[1]]), unlist(toothDF[[4]]))
+  d.1_0.Data <- c(unlist(toothDF[[2]]), unlist(toothDF[[5]]))
+  d.2_0.Data <- c(unlist(toothDF[[3]]), unlist(toothDF[[6]]))
+  
+  dataSet   <- data.frame(
+    statistic     = double(0),
+    parameter     = double(0),
+    p.value       = double(0),
+    conf.int.low  = double(0),
+    conf.int.high = double(0),
+    estimate.low  = double(0),
+    estimate.high = double(0),
+    null.value    = integer(0),
+    stderr        = double(0),
+    alternative   = character(0),
+    method        = character(0),
+    data.name     = character(0)
+  )
+
+  # "two.sided", "less", "greater"
+  alternative <- "two.sided"
+
+  ttest[[1]] <- t.test(x = vc.Data, y = oj.Data, alternative = c(alternative),
+                   paired = FALSE, var.equal = FALSE)
+  ttest[[2]] <- t.test(x = d.0_5.Data, y = d.1_0.Data, alternative = c(alternative),
+                       paired = FALSE, var.equal = FALSE)
+  ttest[[3]] <- t.test(x = d.0_5.Data, y = d.2_0.Data, alternative = c(alternative),
+                       paired = FALSE, var.equal = FALSE)
+  ttest[[4]] <- t.test(x = d.1_0.Data, y = d.2_0.Data, alternative = c(alternative),
+                       paired = FALSE, var.equal = FALSE)
+  
+  k = 5
+  for (i in 1:5) {
+    for (j in (i+1):6) {
+      ttest[[k]] <- t.test(x = toothDF[[i]], y = toothDF[[j]], alternative = c(alternative),
+                       paired = FALSE, var.equal = FALSE)
+      k = k + 1
+    }
+  }
+
+  # ttest[[5]] <- t.test(x = toothDF[[1]], y = toothDF[[2]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[6]] <- t.test(x = toothDF[[1]], y = toothDF[[3]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[7]] <- t.test(x = toothDF[[1]], y = toothDF[[4]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[8]] <- t.test(x = toothDF[[1]], y = toothDF[[5]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[9]] <- t.test(x = toothDF[[1]], y = toothDF[[6]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[10]] <- t.test(x = toothDF[[2]], y = toothDF[[3]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[11]] <- t.test(x = toothDF[[2]], y = toothDF[[4]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[12]] <- t.test(x = toothDF[[2]], y = toothDF[[5]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[13]] <- t.test(x = toothDF[[2]], y = toothDF[[6]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[14]] <- t.test(x = toothDF[[3]], y = toothDF[[4]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[15]] <- t.test(x = toothDF[[3]], y = toothDF[[5]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[16]] <- t.test(x = toothDF[[3]], y = toothDF[[6]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[17]] <- t.test(x = toothDF[[4]], y = toothDF[[5]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[18]] <- t.test(x = toothDF[[4]], y = toothDF[[6]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+  # ttest[[19]] <- t.test(x = toothDF[[5]], y = toothDF[[6]], alternative = c(alternative),
+  #                      paired = FALSE, var.equal = FALSE)
+
+  for (t in ttest) {
+    dataSet <- rbind(dataSet, c(
+      t[1][[1]], t[2][[1]], t[3][[1]], t[4][[1]][1], t[4][[1]][2], t[5][[1]][1], t[5][[1]][2],
+      t[6][[1]], t[7][[1]], t[8][[1]], t[9][[1]], t[10][[1]]))
+  }
+
+  colNames  <- c("statistic", "parameter", "p.value", "conf.int.low", "conf.int.high",
+                 "estimate.low", "estimate.high", "null.value", "stderr", "alternative",
+                 "method", "data.name")
+
+  colnames(dataSet) <- colNames
+
+#   # -----------------------------------------------------------------------------
+  if( VERIFY_TOOTH_SUMMARY | FALSE)
+  {
+    print("supp.T")
+    print(ttest)
+    print("d0.5_1.0.T")
+    print(d0.5_1.0.T)
+    print("d0.5_2.0.T")
+    print(d0.5_2.0.T)
+    print("d1.0_2.0.T")
+    print(d1.0_2.0.T)
+    print(names(d1.0_2.0.T))
+  }
+
+  if( VERIFY_TOOTH_SUMMARY | FALSE)
+  {
+    print(paste0("supp.T['statistic'][[1]]:   ", supp.T["statistic"][[1]]))
+    print(paste0("supp.T['parameter'][[1]]:   ", supp.T["parameter"][[1]]))
+    print(paste0("supp.T['p.value']:          ", supp.T["p.value"]))
+    print(paste0("supp.T['conf.int'][[1]][1]: ", supp.T["conf.int"][[1]][1]))
+    print(paste0("supp.T['conf.int'][[2]][2]: ", supp.T["conf.int"][[1]][2]))
+    print(paste0("supp.T['estimate'][[1]][1]: ", supp.T["estimate"][[1]][1]))
+    print(paste0("supp.T['estimate'][[1]][2]: ", supp.T["estimate"][[1]][2]))
+    print(paste0("supp.T['null.value'][[1]]:  ", supp.T["null.value"][[1]]))
+    print(paste0("supp.T['stderr']:           ", supp.T["stderr"]))
+    print(paste0("supp.T['alternative']:      ", supp.T["alternative"]))
+    print(paste0("supp.T['method']:           ", supp.T["method"]))
+    print(paste0("supp.T['data.name']:        ", supp.T["data.name"]))
+  }
+  if( VERIFY_TOOTH_SUMMARY | TRUE)
+  {
+    print("dataSet")
+    print(dataSet)
+  }
+
+
+  if(VERIFY_TOOTH_SUMMARY | FALSE)
+  {
+    print("fullSummary")
+    print(fullSummary)
+  }
+}
+
+if(RUN_VERIFY_TOOTH_SUMMARY)
+{
+  supplement = c("OJ", "AA")    # supplement of AA, OJ - Orange Juice, AA - Ascorbic Acid
+  doses      = c(0.5, 1.0, 2.0) # mg/day
+  nPigs    <- 60
+  nLength  <- nPigs/(length(doses)*length(supplement))
+  teeth    <- list()
+  
+  ToothGrowth <- setToothData(ToothGrowth)
+  for (i in 1:6) { 
+    start   <- ((i - 1) * nLength) + 1
+    finish  <- i * nLength
+    teeth[[i]] <- ToothGrowth[start : finish,]
+    print("tooth")
+    print(teeth[[i]])
+  }
+  
+  generateToothSummaries(ToothGrowth)
+}
+
+```
+
+```{r generateSummaryTable, echo = FALSE}
+generateSummaryTable <- function (sampleRepetition)
+{
+  if(VERIFY_CONVERGE_TABLE | FALSE)
+  {
+    print("imageConvergence: verify inputs")
+    print(paste0("sampleStats  = ", sampleStats))
+  }
+
+  resTable <- knitr::kable(sampleStats, "latex",
+    caption = paste0("table"), digits = 3, align = "llll", row.names = TRUE) %>%
+    kable_styling(bootstrap_options = c("striped", "hover"),
+                  full_width = F,
+                  # position = "left",
+                  font_size = 8) %>%
+    column_spec(column=1, width="0.2cm") %>%
+    column_spec(column=2, width="1.0cm") %>%
+    column_spec(column=3, width="0.7cm") %>%
+    column_spec(column=4, width="1.5cm") %>%
+    column_spec(column=5, width="1.0cm") %>%
+    column_spec(column=6, width="1.5cm") %>%
+    kable_classic_2()
+  # -----------------------------------------------------------------------------
+
+  return (resTable)
+
+}
+
+if(RUN_VERIFY_CONVERGE_TABLE)
+{
+  LAMBDA       <- 0.2
+  SAMPLE_SIZE   <- 40
+  MU           <- 1/LAMBDA
+  var          <- MU^2/sqrt(SAMPLE_SIZE)
+  sampleRepetition  <- c(10, 100, 1000, 10000, 100000, 1000000)
+
+  simData           <- generateSampleMeansLists(sampleRepetition, SAMPLE_SIZE, LAMBDA)
+  sampleMeansLists  <- calcSampleMeansLists(sampleRepetition, simData)
+  sampleMeansStats  <- getSampleMeansStats(sampleRepetition, sampleMeansLists, MU, var)
+  resTable          <- generateConvergeTable(sampleMeansStats)
+
+  print("RUN_VERIFY_CONVERGE_TABLE: : resTable")
+}
+
+```
+
 # Execute
 
 ```{r execute, echo = FALSE}
@@ -692,40 +808,28 @@ if(EXECUTE & TRUE)
 {
   baseImage(100)
 
-  sampleRepetition  <- c(10, 20, 30, 40, 100, 1000, 10000, 100000, 1000000)
-  convergenceImage(sampleRepetition)
-
-  resTable <- generateConvergeTable(sampleRepetition)
-
-  sampleRepetition  <- c(10, 20, 40, 1000)
-  normalDistributionImages(sampleRepetition)
-
-  # print(paste0("mu = ", MU, " sample size = ", SAMPLE_SIZE, " var = ", var))
-  # # histogram plots
-  # sampleRepetition  <- c(10, 30, 40, 1000)
+  # sampleRepetition  <- c(10, 20, 30, 40, 100, 1000, 10000, 100000, 1000000)
+  # convergenceImage(sampleRepetition)
   # 
-  # simData          <- generateExponentialData(sampleRepetition)
-  # sampleMeansLists <- generateSampleMeansLists(sampleRepetition, simData)
+  # resTable <- generateConvergeTable(sampleRepetition)
   # 
-  # imageNormalDistribution(sampleRepetition, sampleMeansLists, simData, binRange)
+  # sampleRepetition  <- c(10, 20, 40, 1000)
+  # normalDistributionImages(sampleRepetition)
 
-  # # convergence plot
-  # sampleRepetition <- c(10, 20, 30, 40, 100, 1000, 10000, 100000, 1000000)
-  # 
-  # sampleMeansLists <- generateSampleMeansLists(sampleRepetition)
-  # sampleMeansStats <- calculateSampleMeansStats(sampleRepetition, sampleMeansLists, MU, var)
-  # # sampleStats      <- calculateSampleMeansStats(sampleRepetition, sampleMeansLists)
-  # imageConvergencePlot(sampleRepetition, sampleMeansStats)
-  # 
-  # resTable <- generateConvergeTable(sampleMeansStats)
-  
-  # sampleMeansLists <- calcSampleMeansLists(sampleRepetition, simData)
-  # sampleMeansStats  <- getSampleMeansStats(sampleRepetition, sampleMeansLists, MU, var)
-  # resTable          <- generateConvergeTable(sampleMeansStats)
 
   # tooth plot
-  # ToothGrowth <- generateToothData(ToothGrowth)
+  
+  # -----------------------------------------------------------------------------
+  allFactor   <- as.factor(paste0(ToothGrowth$supp, "-", ToothGrowth$dose))
+  ToothGrowth <- cbind(ToothGrowth, allFactor)
+  # -----------------------------------------------------------------------------
+
   # generateToothImage(ToothGrowth)
+  # generateToothSuppImage(ToothGrowth)
+  
+  toothDF <- setToothData(ToothGrowth)
+  generateToothSummaries(toothDF)
+  
 }
 
 ```
@@ -758,7 +862,7 @@ To address these points, the simulation will produce IIIIII images, and IIIIII t
 
 WHAT ARE MU AND SIGMA? [wikipedia https://en.wikipedia.org/wiki/Exponential_distribution]
 
-### \textbf{Setting up Simulation Data}
+### $\textbf{Setting up Simulation Data}$
 
 The Central Limit Theorem^[The CLT "states the following. Let $X_1, X_2, X_3, ..., X_n$ denote a random sample of $n$ independent observations from a population with overall expected value (average) $\mu$ and a finite variance $\sigma^2$, and let $\bar{X_n}$ denote the sample mean of that sample (which is itself a random variable). Then the limit as $n \to \infty$ of the distribution of $\frac {\bar {X_n} - \mu}{\sigma_{\bar X_n}}$, where $\sigma_{\bar X_n} = \sigma/\sqrt{n}$ [@wikipedia]."] suggests the mean and variance of the normal distribution will converge to the mean and variation of the source (exponential) distribution as the number of sample means increase.
 
@@ -790,7 +894,7 @@ generateExponentialData <- function(sample) {
 ```
 \normalsize
 
-### \textbf{Mean and Variance Convergence}
+### $\textbf{Mean and Variance Convergence}$
 
 With the ability to create simulated data from an exponential distribution, the next step is to collect statistical data to show the convergence of the mean and variance of the sample means distribution. The $\textbf{\textit{calculateSampleMeansStats(sampleRepetition)}}$ function, where $\textit{sampleRepetition}$ is a list of sample values, is used to generate a ${sampleStats}$ data frame. The columns of the ${sampleStats}$ data frame contain the values of $\mu$ and $variance$. It also includes two additional values $muErr$ and $varErr$ that contain absolute error values for $\mu$ and $variance$ respectively. The rows of the ${sampleStats}$ data frame contain values of each column for each element of $\textit{sampleRepetition}$.
 
@@ -875,17 +979,16 @@ convergenceImage <- function(sampleRepetition)
 ```
 \normalsize
 
-### \textbf{Convergence Image}
+### $\textbf{Convergence Image}$
 
 The image generated by convergenceImage (Figure 2), shows the convergence of the sample means distribution's mean value in orange and mean value of the exponential distribution $\mu = 5.0$ in light orange. Likewise, the sample means' variance is shown in green and the exponential distribution's variance $variance = 0.625$ is shown in light green.
-
 
 \begin{wrapfigure}{r}{0.4\textwidth}
   \centering
     \includegraphics[width=\linewidth]{converge.png}
 \end{wrapfigure}
 
-This plot satisfies two of the requirements for Part I:
+This plot satisfies the first two requirements for Part I:
 
 1 \textbf{The theoretical mean of the sample means converges to the same mean as the exponential distribution}. As the number of values in the sample means increases, the mean of the sample means approaches the theoretical value predicted by the CLT. The solid orange line osciallates about $\mu$ until $n \approx 1000$, then it rapidly converges to $\mu$.
 
@@ -893,14 +996,31 @@ This plot satisfies two of the requirements for Part I:
 
 With the first two requirements satisfied, the next section will demonstrate will demonstrate the the third requirement, the sample means distribution approximates $N(\mu, \sigma^2)$.
 
-### \textbf{The sample means distribution approximates $N(\mu, \sigma^2)$}
+### $\textbf{The sample means distribution approximates $N(\mu, \sigma^2)$}$
 
 To demonstrate the sample means distribution approximates $N(\mu, \sigma^2)$, the code will generate a set of four plots showing the histogram and density curve fit to it, the curve $N(\mu, \sigma^2)$ predicted by the CLT, and two lines showing the means of the fitted and theoretical distributions. The plots are based on sample means with 10, 30, 40, and 1000 samples.
 
-To generate the 
+The code to create the sample means approximation (Code Sample 5) does the following:
 
+1 Create one sample matrix for each value in the sample repetition list
 
-\break
+2 Generate a list of sample means
+
++ Compute the mean of each column of the matrix for each matrix.
+
++ Store each sample mean set in a list.
+
+3 Transform each sample means set to a standard normal distribution, using the Z-transformation: 
+
+\begin{equation}
+\frac {\bar {X_n} - \mu}{\sigma_{\bar X_n}}.
+\end{equation}
+
+this will ensure the variance is computed around $\mu = 5$, and not $\mu = 0$.
+
+4 Transform each sample set back to the original mean, $\mu = 5$.
+
+5 Plot the result.
 
 \textbf{Code Block 5}
 \scriptsize
@@ -916,7 +1036,6 @@ normalDistributionImages <- function(sampleRepetition)
     simData[[i]]   <- generateExponentialData(sampleRepetition[i])
     colData[[i]]   <- colMeans(simData[[i]])
     sampleMeans[[i]] <- data.frame(pdf = c(unlist(lapply(colData[[i]], transformToN))))
-    sourceData[[i]]  <- data.frame(pdf = c(unlist(lapply(simData[[i]], transformToN))))
 
     pltList[[i]] <- ggplot(sampleMeans[[i]], aes(x = pdf)) +
       stat_function(fun = function (x) dnorm(x, mean =  5, sd = 1),
@@ -936,68 +1055,52 @@ normalDistributionImages <- function(sampleRepetition)
 ```
 \normalsize
 
+The images created by normalDistributionImages are shown in Figure 3. 
 
-\textbf{Code Block 5a}
-\scriptsize
-\definecolor{shadecolor}{RGB}{242, 255, 255}
-```{r echo=TRUE, eval = FALSE}
-normalDistributionImages <- function(sampleRepetition)
-{
-  binRange          <- seq(2.0, 9.0, by = 0.25)
-  label <- c("a", "b","c","d")
-  pltList <- list()
-
-  transformToN <- function(sample) {
-    (sample - MU)/SAMPLE_ERR + MU
-  }
-
-  simData  <- list()
-  colData  <- list()
-  sampleMeans  <- list()
-  sourceData  <- list()
-  for (i in 1:length(sampleRepetition)) {
-    simData[[i]]   <- generateExponentialData(sampleRepetition[i])
-    colData[[i]]   <- colMeans(simData[[i]])
-  }
-
-  for (i in 1:length(sampleRepetition)) {
-    sampleMeans[[i]] <- data.frame(pdf = c(unlist(lapply(colData[[i]], transformToN))))
-    sourceData[[i]]  <- data.frame(pdf = c(unlist(lapply(simData[[i]], transformToN))))
-  }
-```
-\normalsize
-
-\textbf{Code Block 5b}
-\scriptsize
-\definecolor{shadecolor}{RGB}{242, 255, 255}
-```{r echo=TRUE, eval = FALSE}
-
-  for (i in 1:length(sampleRepetition)) {
-    pltList[[i]] <- ggplot(sampleMeans[[i]], aes(x = pdf)) +
-      stat_function(fun = function (x) dnorm(x, mean =  5, sd = 1),
-        color = "#00bfb2", fill = "#00bfb2", geom = "area", alpha = 0.8) +
-      geom_density(alpha = 0.3, color = "#000000", fill="#000000")  +
-      geom_histogram(aes(y = after_stat(density)), breaks = binRange,
-                     alpha = 0.2, color = "#505050", linewidth = 0.2) +
-      geom_vline(aes(xintercept=mean(pdf)), color="#000000", linewidth = 0.5, linetype = 2) +
-      geom_vline(aes(xintercept = MU), color="#00bfb2", linewidth = 0.5, linetype = 2) +
-      geom_hline(yintercept=0, color="#000000", linewidth = 0.5) +
-
-      <Additional ggplot2 formatting>
-
-  }
-
-  plt <- ggarrange(pltList[[1]], pltList[[2]], pltList[[3]], pltList[[4]],
-          labels = label, ncol = 2, nrow = 2)
-  ggsave(plot = plt, width = 6.0, height = 4.0, dpi = 300, filename = "distribution.png")
-}
-```
-\normalsize
-
-\begin{wrapfigure}{r}{0.4\textwidth}
+\begin{wrapfigure}{r}{0.5\textwidth}
   \centering
     \includegraphics[width=\linewidth]{distribution.png}
 \end{wrapfigure}
+
+Each image includes five parts: the normal distribution $N(\mu, \sigma^2)$, the histogram of the corresponding sample means, a curve approximating the pdf of the histogram, a vertical line centered on the histogram pdf, and a vertical line centered on the normal curve.
+
+1) The main observation from the images is the evolution of the approximate pdf (black outline with gray interior) from some nonlinear curve to a smoother normal-like curve. This is demonstrated by the $N(5, 25)$ curve overlaying the nonlinear curve. As $n$ increased from 10 to 1000, histogram pdf approaches the shape of the normal pdf. 
+
+2) The separation of the histogram mean line and the normal mean line decreases as the $n$ increases. This shows the two lines 
+
+This plot satisfies the last requirement for Part I:
+
+1 \textbf{The sample means distribution approximates $N(\mu, \sigma^2)$ }. As $n$ increases, the shape of the curve approaches the shape of $N(\mu, \sigma^2)$. As the answers to requirements 1 and 2 show the convergence of both the mean and variance of the approximate pdf to the normal pdf, the CLT prediction is correct.
+
+
+
+
+# Part II
+## Basic Inferential Data Analysis
+
+
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \centering
+    \includegraphics[width=\linewidth]{tooth.png}
+\end{wrapfigure}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \centering
+    \includegraphics[width=\linewidth]{tooth-supp.png}
+\end{wrapfigure}
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ################################################
 
@@ -1005,94 +1108,7 @@ normalDistributionImages <- function(sampleRepetition)
 
 
 
-
-In this project you will investigate the exponential distribution in R and compare it with the Central Limit Theorem. 
-
-
-
-• Simulations: Include English explanations of the simulations you ran, with the accompanying R code. Your explanations should make clear what the R code accomplishes.
-
-### Central Limit Theorem
-
-Given a probability distribution $P$, a set of $n$ random values from $P$ is a $\textbf{sample.}$ The mean value of a sample from $P$ is called the sample mean, which is a random variable from $N(\mu, \sigma^2)$,  $P$ is not necessarily a normal distribution. The values of $\mu$ and $\sigma^2$ are the mean and variance of $P$.
-
-The Central Limit Theorem (CLT) roughly states that as the number of sample means from distribution $P$ increases the sample distribution converges to the normal distribution $N(\mu, \sigma^2)$.^[The CLT "states the following. Let $X_1, X_2, X_3, ..., X_n$ denote a random sample of $n$ independent observations from a population with overall expected value (average) $\mu$ and a finite variance $\sigma^2$, and let $\bar{X_n}$ denote the sample mean of that sample (which is itself a random variable). Then the limit as $n \to \infty$ of the distribution of $\frac {\bar {X_n} - \mu}{\sigma_{\bar X_n}}$, where $\sigma_{\bar X_n} = \sigma/\sqrt{n}$ [@wikipedia]."]. $P$ does not need to be a normal distribution to get the results predicted by the CLT.
-
-### Exponential Distribution
-
-The exponential distribution is defined as $f(x) = \lambda e^{-\lambda x}$ where $\lambda$ is the \textbf{mean event rate}. The mean and variance are $\mu = 1/\lambda$ and $\sigma^2 = 1/\lambda^2$ respectively. The values of $\mu$ and $\sigma^2$ are the values predicted by the CLT for the normal distribution. To show the CLT predictions are valid, the document code will simulate the collection of sample means, then analyze the simulation results. 
-
-
-### Simulation
-
-The goal of the simulation is to mimic collecting data from an exponential distribution. Code Block 1 shows the code responsible for generating the simulated data. It is designed to create a list of sample means of
-
-
-
-VThe user-defined function responsible for generating the random variables is $textbf{\textit{generateExponentialData}}$.  
-
-```{r printTable, echo = FALSE}
-resTable
-```
-
 \break
-
-Code Block 1
-\footnotesize
-\definecolor{shadecolor}{RGB}{242, 255, 255}
-```{r echo=TRUE, eval = FALSE}
-LAMBDA       <- 0.2
-SAMPLE_SIZE   <- 40
-mu           <- 1/LAMBDA
-SIGMA        <- 1/LAMBDA
-VARIANCE     <- SIGMA^2
-SAMPLE_ERR     <- SIGMA/sqrt(SAMPLE_SIZE)
-```
-\normalsize
-
-Code Block 2
-\footnotesize
-\definecolor{shadecolor}{RGB}{242, 255, 255}
-```{r echo=TRUE, eval = FALSE}
-generateExponentialData <- function(samples) {
-  simData <- matrix(rexp(samples*SAMPLE_SIZE, LAMBDA), nrow = SAMPLE_SIZE, ncol = samples)
-  return (simData)
-}
-```
-\normalsize
-
-
-Code Block 3
-\footnotesize
-\definecolor{shadecolor}{RGB}{242, 255, 255}
-```{r echo=TRUE, eval = FALSE}
-calculateSampleMeansStats <- function (sampleRepetition)
-{
-  sampleStats <- data.frame(N_obs = integer(), mu = double(), muErr = double(),
-                            variation = double(), varErr = double())
-
-  for (sample in 1:length(sampleRepetition)) {
-    simData       <- generateExponentialData(sampleRepetition[[sample]])
-    sampleMeans   <- colMeans(simData)
-    xbar          <- mean(sampleMeans)
-    sig_2         <- var(sampleMeans)
-
-    sampleStats  <- rbind(sampleStats,
-                           c(sampleRepetition[sample], xbar, abs((mu - xbar)/xbar),
-                             sig_2, abs((SAMPLE_VAR - sig_2)/sig_2)))
-  }
-  colnames(sampleStats) <- c("NRep", "Mean", "Absolute\nError of\nMean",
-                             "Variance", "Absolute\nError of\nVariance")
-  sampleStats <- cbind(sampleStats, OffsetVar = sampleStats$Variance + 5)
-
-  return (sampleStats)
-}
-
-```
-\normalsize
-
-
-
 
 
 
@@ -1163,256 +1179,9 @@ In addition to the qualitative comparison of the two distributions, the document
 
 
 
-To demonstrate the effect of the CLT on the sample means, the document code generates an image using the $\textbf{\textit{imageNormalDistribution}}$ function. The image consists of four graphs for each of the sample means distributions stored in $\textit{sampleMeansLists}$. Figure 1 (a-d) are the plots for repeat values of n=10, 30, 40, and 1000.
-
-Before the creating the graphs, the document code converts the sample means distribution to a standard normal normal using the z-score transformation (eqn1).
-
-\begin{equation}
-\frac {\bar {X_n} - \mu}{\sigma_{\bar X_n}} =  \frac {X_n - 1/\lambda} {\sigma_{40}} =  \frac {\bar {X_n} - 5} {\sigma_{40}}.
-\end{equation}
-
-The distribution associated by the transformed sample means should approach a standard normal distribution as the value n increases. To demonstrate the visual similarity between the distributions, it is only necessary to compare the size and shape of both.
-
-Figure 1 a-d compares the distributions by overlaying the $\textcolor{red}sample means distribution in black} and the $\textcolor{red}standard normal distribution in blue}. The graph also includes the histogram created by the corresponding $\textcolor{red}sample means distribution as a set of gray bars} and two dashed lines. $\textcolor{red}{The black line is the mean of the sample means distribution}.
-
-Based on the following observations, the graphs verify that as the number of repetitions increases, the sample means distribution approaches the standard normal distribution. 
-
-1) The area of blue shading and the area of black shading decreases as the number of repetitions increases, 
-2) the shape sample means approaches the shape of the standard normal as the number of repetitions increases,
-3) the size of the sample means distribution approaches the size of the standard noraml distribution as the number of repetitions increases.
-
-
-
-
-
-<!-- \begin{wrapfigure}{r}{0.5\textwidth} -->
-<!--   \centering -->
-<!--     \includegraphics[width=\linewidth]{teeth.png} -->
-<!-- \end{wrapfigure} -->
-
-<!-- the central limit theorem (CLT) establishes that, in many situations, for independent and identically distributed random variables, the sampling distribution of the standardized sample mean tends towards the standard normal distribution even if the original variables themselves are not normally distributed., which states, "in many situations, for independent and identically distributed random variables, the sampling distribution of the standardized sample mean tends towards the standard normal distribution even if the original variables themselves are not normally distributed[@scribbr]." -->
-
-
-
-<!-- that the mean of a large number of samples taken from a distribution will approximate an normal distribution. The point of this demonstration is to validate the Central Limit Theorem, which says "that the sampling distribution of the mean will always follow a normal distribution when the sample size is sufficiently large [@scribbr]."  -->
-
-In this case the code will select values from an exponential distribution,
-
-\begin{equation}
-f(x) = \bigg\{
-  \begin{array}{ c l }
-    \lambda e^{-\lambda x} & \quad \textrm{if } x \geq 0 \\
-    0                 & \quad \textrm{if } x < 0
-  \end{array}
-\end{equation}
-
-## Exponential Distribution Simulation
-
-
-## =======================================
-
-
-
-
 Part 1 is an analysis of the CLT using a simulation of a non-Gaussian distribution. Each simulation will consist of $n$ samples, and each sample will consist of forty observation taken from an exponential distribution . The project will run the simulation several times each using a different value of $n$. 
 
 For each sample, the program will record the mean and standard values to construct a distribution of the sample means. If the CLT is correct, then the expected result should be a Gaussian distribution with a mean and standard deviation of the rate constant used in the exponential distribution.
-
-## Simulation description
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### Exponential distribution
-
-The $\textbf{Exponential Probability Distribution (EPD)}$ with rate constant $\lambda$ is 
-
-where $\frac{1} {\lambda}$ is the rate constant of the distribution. Based on the Johns Hopkins University Statistical Inference Course Project [@JHU-course] the the mean and standard deviation equal $\frac{1} {\lambda}$. A proof for the mean found in The Book of Statistical Proofs [@bookStatProofs-mean] and the variance in [@bookStatProofs-var], keeping in mind that $var = \sigma^2$.
-
-#### ==============
-
-
-### Central limit theorem
-The $\textbf{Central Limit Theorem (CLT)}$ "establishes that, in many situations, for independent and identically distributed random variables, the sampling distribution of the standardized sample mean tends towards the standard normal distribution even if the original variables themselves are not normally distributed.[@wikipedia]" By applying the CLT to the exponential distribution, the program  will show the accuracy of theorem based on the known values of the distribution. 
-
-The central limit theorem asserts "that the sampling distribution of the mean will always follow a normal distribution when the sample size is sufficiently large. This sampling distribution of the mean isn’t normally distributed because its sample size isn’t sufficiently large.[@scribbr]"
-
-To demonstrate how the Central Limit Theorm (CLT) predicts the distribution and parameters for equation 1. To show this, the simulation will generate forty sets of exponential random numbers for each member of the variable $\textit{SampleSize}$. The simulation will calculate the mean for the forty distributions generated for each sample size.
-
-
-
-## Simulation
-
-The simulation is designed to mimic the CLT by generating random values from a exponential distribution with $\lambda = 0.2$. Each selection 
-
-The simulations were run four times with 10, 30, 40, and 1000 repetions for of each sample respectively. The resulting sample means were collected as a list then plotted as a bar graph. In addition to the bar graph, the plot also included a density function plot, a Gaussian density plot with N($1/lambda$, $1/lambda$), and a vertical line at the mean of the sample distrbution. The plots are shown in \@ref{fig:figs}.
-
-The simulation mimics sampling from an exponentially distributed population. Each sample consists of forty values collected by invoking the $\textbf{\textit{rexp}}$ function, and the sample collection is repeated $n$ times. The resulting data set is stored in a matrix, and the distribution of the sample means is found by calculating the mean of each column of the matrix. The collection of sample means is used to generate a $\textit{probability density fuction}$, and to produce the mean and variance of the distribution.
-
-<!-- FIGURE ZZZZ(a-d) show sample distributions with repeat values of 10, 30, 40, and 1000. The distribution data is sorted into contiguous intervals.^[\[2.5, 2.75), \[2.75, 3), \[3, 3.25), \[3.25, 3.5), \[3.5, 3.75), \[3.75, 4), \[4, 4.25), \[4.25, 4.5), \[4.5, 4.75), \[4.75, 5), \[5, 5.25), \[5.25, 5.5), \[5.5, 5.75), \[5.75, 6), \[6, 6.25), \[6.25, 6.5), \[6.5, 6.75), \[6.75, 7), \[7, 7.25), \[7.25, 7.5)] Each value in the sample distribution is binned into on  -->
-
-The simulation mimics the CLT by repeatedly selecting a sample with a fixed number of "observations" from an exponential distribution with $\lambda = 0.2$. The simulations were run four times with 10, 30, 40, and 1000 repetions for of each sample respectively. The resulting sample means were collected as a list then plotted as a bar graph. In addition to the bar graph, the plot also included a density function plot, a Gaussian density plot with N($1/lambda$, $1/lambda$), and a vertical line at the mean of the sample distrbution. The plots are shown in \@ref{fig:figs}.
-
-### Sample distributions
-
-The purpose of this project is two fold. The first is to demonstrate the validity of the Central Limit Theorem (CLT) and second is to apply statistical analysis methods to characterize the R "ToothGrowth" data set [@ToothGrowth]. The CLT asserts that the sampling distribution of the mean will always follow a normal distribution when the sample size is sufficiently large [@scribbr]."
-
-To show how the sample distribution changes with the number of repetitions, the program will process the simulation using a set of repeat values. For example, to show the convergence of the sample mean and variance to the theoretical values, is shown using 
-
-
-simulations repeats in the set the sample mean and variance use the set {10, 20, 30, 40, 100, 1000, 10000, 100000, 1000000, 10000000} to generate ten pairs of means and variances. The
-
-
-"The central limit theorem says that the sampling distribution of the mean will always follow a normal distribution when the sample size is sufficiently large. This sampling distribution of the mean isn’t normally distributed because its sample size isn’t sufficiently large.[@scribbr]"
-
-
-To demonstrate how the Central Limit Theorm (CLT) predicts the distribution and parameters for equation 1. To show this, the simulation will generate forty sets of exponential random numbers for each member of the variable $\textit{SampleSize}$. The simulation will calculate the mean for the forty distributions generated for each sample size.
-
-After calculating the mean and variance for each sample size, the simulation will generate images showing the convergence of both the sample mean and variance as $n \to \infty$. Additionally, the code with generate four plots with $n = 2, 10, 30, 40$ to show the convergence of the sample distribution to a Gaussian distribution. 
-The specific steps are:
-
-1. Loop through the $\textit{SampleSize}$ list to get the next sample size, $n$
-  + Generate an $n \times nSamples$ matrix and populate it with random variables from the exponential distribution. 
-  + Calculate the mean value of each column of the matrix i.e., the sample means, and store the resulting values in the $meanColMatrix$. Each column is a distribution of sample means for a given $n$.
-  +  Continue looping
-2. Loop through the each column of the $meanColMatrix$
-  + Calculate the mean and standard deviation of each column
-  + Bind a list with the sample size $n$, and the mean and variance for the $meanColMatrix$ to the $sampleStats$ data frame.
-  + Continue looping
-
-## Results
-
-
-
-
-
-
-
-
-
-
-
-
-
-3. Generate Figure 1. This figure is a plot of the sample mean and variance versus the number of samples. The blue line in Figure 1 is the mean of sample mean, and it shows that as $n$ gets larger, it converges the the expected mean $1/\lambda = 5.0$. Figure 1 also represents the change in variance of the sample mean with respect to $n$. The expected variance of the sample distribution
-
-\begin{equation}
-Var(X) = \frac{\sigma^2}{n} = \bigg ( \frac {1}{\lambda} \bigg)^2 \frac {1} {n} = 25.0/n,
-\end{equation}
-
-(see Appendix 1, section ????).
-
-
-
-
-
-
-4. Generate Figure 2. 
-
-
-Show the sample mean and compare it to the theoretical mean of the distribution.
-Show how variable the sample is (via variance) and compare it to the theoretical variance of the distribution.
-Show that the distribution is approximately normal.
-In point 3, focus on the difference between the distribution of a large collection of random exponentials and the distribution of a large collection of averages of 40 exponentials.
-
-
-
-
-
-<!-- # Preliminaries -->
-<!-- **Exponential Distribution** -->
-
-<!-- The exponential distribution is defined by the function -->
-
-<!-- \[f(x) = \bigg\{ -->
-<!--   \begin{array}{ c l } -->
-<!--     \lambda e^{-\lambda x} & \quad \textrm{if } x \geq 0 \\ -->
-<!--     0                 & \quad \textrm{if } x < 0 -->
-<!--   \end{array}\] -->
-
-<!-- where the rate parameter $\lambda$ is the mean number of events over a given time period^[https://en.wikipedia.org/wiki/Exponential_distribution]. The of mean and standard deviations of the exponential distribution are $1/\lambda$ and the variation is $1/\lambda^2$. Derivations for the mean^[https://statproofbook.github.io/P/exp-mean.html] and variance^[https://statproofbook.github.io/P/exp-var.html] can be found in \textbf{The Book of Statistical Proofs}.  -->
-
-**Central Limit Theorem**
-
-<!-- The Central Limit Theorem (CLT) says the mean of sample means of size n will approach the population mean as $n \to \infty$. It also states that the standard deviation of the sample means $\sigma/\sqrt n$ will approach zero as $n \to \infty$ where $\sigma$ is the population mean. It also shows as $n \to \infty$ the sample distribution will approach a normal distribution $N(\mu, \sigma/\sqrt n)$. -->
-
-<!-- # Project 6, part 1: The Exponential Distribution -->
-<!-- The goal of this section is to demonstrate the validity of the Central Limit Theorem with respect the exponential distribution. It entails performing several simulations of an exponential distribution to demonstrate the convergence of sample means and the standard error to their theoretical values. It will also display graphical results to visualize the convergence of the distributions to the normal distribution. -->
-
-<!-- The simulation procedure uses the following steps: -->
-
-<!-- 1. Generate a matrix of random values from an exponential distribution. -->
-<!--   - The rate constant for the distribution is $\lambda = 0.2$, number of columns in the matrix is 40. -->
-<!--   - The number of rows varies in size to show the impact of the CLT. -->
-<!-- 2. Store the first row from each matrix, i.e., the first sample distribution in the matrix. -->
-<!-- 3. Calculate the mean of each sample in each matrix. This is the sample distribution. -->
-<!-- 4. For each sample distribution, store the sample mean and standard deviation. -->
-
-<!-- ### **The Sample Mean and Standard deviation** -->
-
-
-<!-- \begin{wrapfigure}{r}{0.3\textwidth} -->
-<!--   \centering -->
-<!--     \includegraphics[width=\linewidth]{converge.png} -->
-<!--   \caption{The plot shows the sample mean (blue) and the sample deviation (red). Note the left scale refers to the sample mean and the right refers to the same deviation.} -->
-<!-- \end{wrapfigure} -->
-
-<!-- Before the simulation starts, it will create forty sets of samples for each of the specified sample size set^[the sample sizes are: 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000]. It will then create a $n \times 40$ matrix, where $n$ a specified sample size. Each matrix will be filled with random values from an exponential distribution with rate parameter $\lambda$.  -->
-
-<!-- The simulation will compute the average value for each column in each matrix, which results in a column means for the matrix. The column means are then bound to the columns of second matrix called the $meanColMatrix$. Once all of the column means are collected, the $meanColMatrix$ is a $40 \times 21$ matrix, with the full set of column means for each simulation size.  -->
-
-<!-- Based on the exponential distribution, the CLT predicts the column means will converge to $1/\lambda = 1/0.20 = 5.0$ and the standard deviation will converge to 0 as $n \to \infty$. Figure 1 shows the convergence of both the mean and standard deviations. Table 1 includes some select points to show the convergence quantitatively. -->
-
-```{r, echo = FALSE}
-  # knitr::kable(statData)
-```
-
-<!-- ### *** Normal distribution *** -->
-<!-- \begin{wrapfigure}{r}{0.4\textwidth} -->
-<!--   \centering -->
-<!--     \includegraphics[width=\linewidth]{distribution.png} -->
-<!--   \caption{Histograms of } -->
-<!-- \end{wrapfigure} -->
-
-<!-- The third requirement for validating the CLT is the distribution of the sample means must be normal. This paper will use visualization to verify that the sample means becomes more normal as $n \to \infty$. Figure 2 shows four sample means distributions of varying sample sizes, each plot is represented as a bar chart. In addition to the sample distribution, each plot includes an overlay of a normal distributon with $\mu = 5.0$ and $\sigma = 5.0$. The overlays are red, with the exception of Figure 2d, which is green to draw attention to the scale change. -->
-
-<!-- Figure 2a shows the sample distribution of $n = 10$. Visually, the plot is left skewed, and has a wide variation.  -->
-
-
-```{r, echo = FALSE}
-  # knitr::kable(histogramData)
-```
-
-
-
-<!-- Figure 2a is the distribution of the sample means where $n = 10$.   -->
-
-
-<!-- # Project 6, Part 2: Tooth Length -->
-
-<!-- \begin{wrapfigure}{r}{0.4\textwidth} -->
-<!--   \centering -->
-<!--     \includegraphics[width=\linewidth]{teeth.png} -->
-<!--   \caption{Plot of pressure against temperature} -->
-<!-- \end{wrapfigure} -->
-
-<!-- \lipsum[1-3] -->
-
-
-
-
-
-
 
 
 
@@ -1434,169 +1203,4 @@ In point 3, focus on the difference between the distribution of a large collecti
 [Crampton, E. W. (1947). The growth of the odontoblast of the incisor teeth as a criterion of vitamin C intake of the guinea pig. The Journal of Nutrition, 33(5), 491--504. 10.1093/jn/33.5.491]
 
 # Appendix 1: Code
-
-```
-generateSampleMeansLists <- function(sampleRepetition)
-{
-  # ----------------------------------------------------------------------------------
-  simData <- list()
-  sampleMeansLists <- list()
-
-  for (i in 1:length(sampleRepetition)) {
-    simData[[i]] <- matrix(rexp(sampleRepetition[i]*SAMPLE_SIZE, LAMBDA),
-                                   nrow = SAMPLE_SIZE, ncol = sampleRepetition[i])
-    sampleMeansLists[[i]]   <- colMeans(simData[[i]])
-  }
-
-  # ----------------------------------------------------------------------------------
-}
-```
-<!-- \begin{wrapfigure}{l}{0.5\textwidth} -->
-<!--   \centering -->
-<!--     \includegraphics[width=\linewidth]{converge.png} -->
-<!-- \end{wrapfigure} -->
-
-```
-
-imageNormalDistribution <- function(sampleRepetition, sampleMeansLists, binRange)
-{
-  label <- c("a", "b","c","d")
-  pltList <- list()
-
-  transformToN <- function(sample) {
-    (sample - mu)/SAMPLE_ERR + mu
-  }
-
-  for (i in 1:length(sampleRepetition)) {
-    frame <- data.frame(pdf = c(unlist(lapply(sampleMeansLists[[i]], transformToN))))
-    pltList[[i]] <- ggplot(frame, aes(x = pdf)) +
-      stat_function(fun = function (x) dnorm(x, mean =  5, sd = 1),
-        color = "#00bfb2", fill = "#00bfb2", geom = "area", alpha = 0.8) +
-      geom_density(alpha = 0.3, color = "#000000", fill="#000000")  +
-      geom_histogram(aes(y = after_stat(density)), breaks = binRange, 
-                     alpha = 0.2, color = "#505050", linewidth = 0.2) +
-      geom_vline(aes(xintercept=mean(pdf)), color="#000000", linewidth = 0.5, linetype = 2) +
-      geom_vline(aes(xintercept = 0.0), color="#00bfb2", linewidth = 0.5, linetype = 2) +
-      geom_hline(yintercept=0, color="#000000", linewidth = 0.5) +
-      ggtitle(paste0("Sample Mean with n = ", sampleRepetition[i])) +
-      scale_x_continuous(limits = c(-5, 10), "Mean") +
-      scale_y_continuous(limits = c(-0.1, 1), "Density")
-  }
-
-  plt <- ggarrange(pltList[[1]], pltList[[2]], pltList[[3]], pltList[[4]],
-          labels = label, ncol = 2, nrow = 2)
-  ggsave(plot = plt, width = 6.0, height = 4.0, dpi = 300, filename = "distribution.png")
-}
-```
-
-
-
-
-
-
-# --------------------------------
-
-
-### Generate Sample Distributions
-
-```{r problem1, echo=FALSE}
-
-# set.seed(101)
-# 
-# nSamples     <- 40
-# LAMBDA       <- 0.2
-# mu           <- 1/LAMBDA
-# SIGMA        <- 1/LAMBDA
-# var          <- 1/LAMBDA^2
-# exponentSampleMatrix <- matrix()
-# 
-# # Simulate 1,000 samples with 40 observations each
-# setSource <- function (SAMPLE_SIZE)
-# {
-#   meanColMatrix          <- matrix(nrow = 0, ncol = nSamples)
-#   
-#   # print(paste0("sample len ", length(SAMPLE_SIZE)))
-#   # print("meanMat data")
-#   # print("SAMPLE_SIZE[i]   mu   SIGMA")
-# 
-#   for (i in 1:length(SAMPLE_SIZE)) {
-#     
-#         #                                    40
-#         # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#         # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#         # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#         # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#         # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+  nSamples
-#         # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#         # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#         # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#         # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#         # +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-# 
-# # MDist   ------------------------------------------------------------------------------> 10z`
-# # MDist   ------------------------------------------------------------------------------> 20
-# 
-#     exponentSampleMatrix <- matrix(rexp(SAMPLE_SIZE[i]*nSamples, LAMBDA), 
-#                                    nrow = SAMPLE_SIZE[i], ncol = nSamples)
-#           
-# 
-#     # print("setSource: dims(exponentSampleMatrix)")
-#     # print(dim(exponentSampleMatrix))
-#     # print("setSource: colMeans(exponentSampleMatrix)")
-#     # print(colMeans(exponentSampleMatrix))
-#     # print(exponentSampleMatrix)
-#     
-#     meanColMatrix       <- rbind(meanColMatrix, colMeans(exponentSampleMatrix))
-# 
-#     filename <- paste0("sampleMatrix", SAMPLE_SIZE[i], ".csv")
-#     write.csv(exponentSampleMatrix, filename, row.names=FALSE)
-# 
-#     filename <- paste0("meanColMatrix", SAMPLE_SIZE[i], ".csv")
-#     write.csv(meanColMatrix, filename, row.names=FALSE)
-# 
-#     mu      <- mean(meanColMatrix[i,])
-#     VARIANCE   <- var(meanColMatrix[i,])
-#     print(paste0(SAMPLE_SIZE[i], "   ", mu, "   ", VARIANCE))
-#   }
-# 
-#   return (meanColMatrix)
-# }
-# 
-
-```
-
-### Generate sample stats
-
-```{r generateSampleStats, echo=FALSE}
-# 
-# generateSampleStats <- function (SAMPLE_SIZE, meanColMatrix)
-# {
-#   print("generateSampleStats: meanColMatrix")
-#   # print(dim(meanColMatrix))
-#   # print(meanColMatrix)
-# 
-#   sampleStats         <- data.frame()
-#   for (i in 1:length(SAMPLE_SIZE)) {
-#     # print("generateSampleStats: length(meanColMatrix[i,]")
-#     # print(length(meanColMatrix[i,]))
-#     # print("generateSampleStats: meanColMatrix[i]")
-#     # print(meanColMatrix)
-#     sampleStats  <-
-#       rbind(sampleStats, list(SAMPLE_SIZE[i], mean(meanColMatrix[i,]), var(meanColMatrix[i,])))
-#   }
-#   colnames(sampleStats) <- c("Size", "Mean", "Variance")
-# 
-# print("generateSampleStats: sampleStats")
-# # print(sampleStats)
-# filename <- paste0("sampleStats", SAMPLE_SIZE[i], ".csv")
-# write.csv(sampleStats, filename, row.names = FALSE)
-# 
-#   return (sampleStats)
-# }
-# SAMPLE_SIZE   <- c(10, 20, 30, 40)
-# # SAMPLE_SIZE   <- c(10, 20, 30, 40, 100, 1000, 10000, 100000, 1000000, 10000000)
-# meanColMatrix   <- setSource(SAMPLE_SIZE)
-# sampleStats  <- generateSampleStats(SAMPLE_SIZE, meanColMatrix)
-
-```
 
