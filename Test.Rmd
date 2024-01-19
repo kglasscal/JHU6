@@ -36,7 +36,7 @@ RUN_SIM_VERIFY     = FALSE    # run verification tests
 
 # Verify the mean column data is stored as a list of lists.
 VERIFY_MEAN_DISTRIB_FILE  = FALSE
-VERIFY_MEAN_DISTRIB_SCR   = TRUE
+VERIFY_MEAN_DISTRIB_SCR   = FALSE
 RUN_VERIFY_MEAN_DISTRIB   = FALSE
 
 # Verify the simulation data 
@@ -45,8 +45,8 @@ VERIFY_SAMPLE_STATS_SCR   = FALSE
 RUN_VERIFY_STATS          = FALSE
 
 # Verify the mean distribution images 
-VERIFY_MEAN_DIST_IMG      = TRUE
-RUN_MEAN_DIST_IMG         = TRUE
+VERIFY_MEAN_DIST_IMG      = FALSE
+RUN_MEAN_DIST_IMG         = FALSE
 
 # Verify the mean convergence image 
 VERIFY_CONVERGE_IMG       = FALSE
@@ -72,15 +72,15 @@ RUN_VERIFY_TOOTH_SUMMARY  = FALSE
 RUN_CALCULATE_AREA_D      = FALSE
 VERIFY_CALCULATE_AREA_D   = FALSE
 
-library(dplyr)
-library(ggplot2)
-library(gridExtra)
-library(knitr)
-library(kableExtra)
-library(ggpubr)
-library(matrixStats)
-library(data.table)
-library(sfsmisc)
+# library(dplyr)
+# library(ggplot2)
+# library(gridExtra)
+# library(knitr)
+# library(kableExtra)
+# library(ggpubr)
+# library(matrixStats)
+# library(data.table)
+# library(sfsmisc)
 
 set.seed(2063)
 
@@ -90,726 +90,727 @@ set.seed(2063)
 
 ### generateSimData
 
-```{r generateSimData, echo=FALSE}
+<!-- ```{r generateSimData, echo=FALSE} -->
 
-generateSimData <- function(sampleRepetition, sampleSize, lambda)
-{
-  if(RUN_SIM_VERIFY & VERIFY_MEAN_DISTRIB_SCR & FALSE)
-  {
-    print("generateSimData: verify inputs")
-    print(paste0("sampleRepetitions = ", sampleRepetition))
-    print(paste0("sampleSize   = ", sampleSize))
-    print(paste0("lambda       = ", lambda))
-  }
+<!-- generateSimData <- function(sampleRepetition, sampleSize, lambda) -->
+<!-- { -->
+<!--   if(RUN_SIM_VERIFY & VERIFY_MEAN_DISTRIB_SCR & FALSE) -->
+<!--   { -->
+<!--     print("generateSimData: verify inputs") -->
+<!--     print(paste0("sampleRepetitions = ", sampleRepetition)) -->
+<!--     print(paste0("sampleSize   = ", sampleSize)) -->
+<!--     print(paste0("lambda       = ", lambda)) -->
+<!--   } -->
 
-  # ----------------------------------------------------------------------------------
-  simData <- list()
+<!--   # ---------------------------------------------------------------------------------- -->
+<!--   simData <- list() -->
 
-  for (i in 1:length(sampleRepetition)) {
-    simData[[i]] <- matrix(rexp(sampleRepetition[i]*sampleSize, lambda), 
-                                   nrow = sampleSize, ncol = sampleRepetition[i])
-  }
-  # ----------------------------------------------------------------------------------
+<!--   for (i in 1:length(sampleRepetition)) { -->
+<!--     simData[[i]] <- matrix(rexp(sampleRepetition[i]*sampleSize, lambda),  -->
+<!--                                    nrow = sampleSize, ncol = sampleRepetition[i]) -->
+<!--   } -->
+<!--   # ---------------------------------------------------------------------------------- -->
 
-  if(RUN_SIM_VERIFY & VERIFY_SOURCE_FILE & FALSE)
-  {
-    print("generateSimData: store in simData_#.csv")
-    filename <- paste0("simData_", sampleRepetition[i], ".csv")
-    write.csv(sampleMatrix, filename, row.names=FALSE)
-  }
+<!--   if(RUN_SIM_VERIFY & VERIFY_SOURCE_FILE & FALSE) -->
+<!--   { -->
+<!--     print("generateSimData: store in simData_#.csv") -->
+<!--     filename <- paste0("simData_", sampleRepetition[i], ".csv") -->
+<!--     write.csv(sampleMatrix, filename, row.names=FALSE) -->
+<!--   } -->
 
-  if(RUN_SIM_VERIFY & VERIFY_SOURCE_SCR & FALSE)
-  {
-    print("generateSimData: ")
-    print(simData)
-  }
+<!--   if(RUN_SIM_VERIFY & VERIFY_SOURCE_SCR & FALSE) -->
+<!--   { -->
+<!--     print("generateSimData: ") -->
+<!--     print(simData) -->
+<!--   } -->
 
-  return (simData)
-}
+<!--   return (simData) -->
+<!-- } -->
 
-if(RUN_SIM_VERIFY & FALSE)
-{
-  lambda       <- 0.2
-  sampleSize   <- 40
-  sampleRepetition  <- c(10, 20, 30, 40)
-  
-  simData <- generateSimData(sampleRepetition, sampleSize, lambda)
+<!-- if(RUN_SIM_VERIFY & FALSE) -->
+<!-- { -->
+<!--   lambda       <- 0.2 -->
+<!--   sampleSize   <- 40 -->
+<!--   sampleRepetition  <- c(10, 20, 30, 40) -->
 
-  print("RUN_SIM_VERIFY: simData")
-  print(simData)
-}
+<!--   simData <- generateSimData(sampleRepetition, sampleSize, lambda) -->
 
-```
+<!--   print("RUN_SIM_VERIFY: simData") -->
+<!--   print(simData) -->
+<!-- } -->
+
+<!-- ``` -->
 
 ### calcMeanDistributions
 
-```{r calcMeanDistributions, echo=FALSE}
+<!-- ```{r calcMeanDistributions, echo=FALSE} -->
 
-calcMeanDistributions <- function(sampleRepetition, simData)
-{
-  if(RUN_VERIFY_MEAN_DISTRIB & VERIFY_MEAN_DISTRIB_SCR & FALSE)
-  {
-    print("generateSimData: verify inputs")
-    print(paste0("sampleRepetitions = ", sampleRepetition))
-    # print("simData = ")
-    # print(simData)
-    print("Test sim data separately")
-  }
+<!-- calcMeanDistributions <- function(sampleRepetition, simData) -->
+<!-- { -->
+<!--   if(RUN_VERIFY_MEAN_DISTRIB & VERIFY_MEAN_DISTRIB_SCR & FALSE) -->
+<!--   { -->
+<!--     print("generateSimData: verify inputs") -->
+<!--     print(paste0("sampleRepetitions = ", sampleRepetition)) -->
+<!--     # print("simData = ") -->
+<!--     # print(simData) -->
+<!--     print("Test sim data separately") -->
+<!--   } -->
 
-  # ----------------------------------------------------------------------------------
-  meanDistributions <- list()
+<!--   # ---------------------------------------------------------------------------------- -->
+<!--   meanDistributions <- list() -->
 
-  for (i in 1:length(sampleRepetition)) {
-    meanDistributions[[i]]   <- colMeans(simData[[i]])
-  }
-  # ----------------------------------------------------------------------------------
- 
-  return (meanDistributions)
-}
+<!--   for (i in 1:length(sampleRepetition)) { -->
+<!--     meanDistributions[[i]]   <- colMeans(simData[[i]]) -->
+<!--   } -->
+<!--   # ---------------------------------------------------------------------------------- -->
 
-if(RUN_VERIFY_MEAN_DISTRIB & FALSE)
-{
-  print("RUN_VERIFY_MEAN_DISTRIB: meanDistributions")
-  lambda       <- 0.2
-  sampleSize   <- 40
-  sampleRepetition  <- c(10, 20, 30, 40)
-  
-  simData           <- generateSimData(sampleRepetition, sampleSize, lambda)
-  meanDistributions <- calcMeanDistributions(sampleRepetition, simData)
+<!--   return (meanDistributions) -->
+<!-- } -->
 
-  print("RUN_VERIFY_MEAN_DISTRIB: meanDistributions")
-  print(sampleRepetition, meanDistributions)
-}
+<!-- if(RUN_VERIFY_MEAN_DISTRIB & FALSE) -->
+<!-- { -->
+<!--   print("RUN_VERIFY_MEAN_DISTRIB: meanDistributions") -->
+<!--   lambda       <- 0.2 -->
+<!--   sampleSize   <- 40 -->
+<!--   sampleRepetition  <- c(10, 20, 30, 40) -->
 
-```
+<!--   simData           <- generateSimData(sampleRepetition, sampleSize, lambda) -->
+<!--   meanDistributions <- calcMeanDistributions(sampleRepetition, simData) -->
+
+<!--   print("RUN_VERIFY_MEAN_DISTRIB: meanDistributions") -->
+<!--   print(sampleRepetition, meanDistributions) -->
+<!-- } -->
+
+<!-- ``` -->
 
 ## Data Analysis
 
 ### getSampleMeansStats
 
-```{r getSampleMeansStats, echo=FALSE}
+<!-- ```{r getSampleMeansStats, echo=FALSE} -->
 
-getSampleMeansStats <- function (sampleRepetition, meanDistributions, mu, var)
-{
-  if(RUN_VERIFY_STATS & VERIFY_SAMPLE_STATS_SCR & FALSE)
-  {
-    print("getSampleMeansStats: verify inputs")
-    print(paste0("sampleRepetitions = ", sampleRepetition))
-    print(paste0("mu           = ", mu))
-    print(paste0("var          = ", var))
-    # print("meanDistributions = ")
-    # print(meanDistributions)
-    print("Test meanDistributions separately")
-  }
+<!-- getSampleMeansStats <- function (sampleRepetition, meanDistributions, mu, var) -->
+<!-- { -->
+<!--   if(RUN_VERIFY_STATS & VERIFY_SAMPLE_STATS_SCR & FALSE) -->
+<!--   { -->
+<!--     print("getSampleMeansStats: verify inputs") -->
+<!--     print(paste0("sampleRepetitions = ", sampleRepetition)) -->
+<!--     print(paste0("mu           = ", mu)) -->
+<!--     print(paste0("var          = ", var)) -->
+<!--     # print("meanDistributions = ") -->
+<!--     # print(meanDistributions) -->
+<!--     print("Test meanDistributions separately") -->
+<!--   } -->
 
-  # -----------------------------------------------------------------------------
-  sampleStats <- data.frame(N_obs = integer(), mu = double(), muErr = double(), 
-                            variation = double(), varErr = double())  
-  for (i in 1:length(sampleRepetition)) {
-    xbar     <- mean(meanDistributions[[i]])
-    variance <- var(meanDistributions[[i]])
+<!--   # ----------------------------------------------------------------------------- -->
+<!--   sampleStats <- data.frame(N_obs = integer(), mu = double(), muErr = double(),  -->
+<!--                             variation = double(), varErr = double())   -->
+<!--   for (i in 1:length(sampleRepetition)) { -->
+<!--     xbar     <- mean(meanDistributions[[i]]) -->
+<!--     variance <- var(meanDistributions[[i]]) -->
 
-    sampleStats  <- rbind(sampleStats, 
-                           c(sampleRepetition[i], xbar, abs((mu - xbar)/xbar),
-                             variance, abs((var - variance)/variance)))
-  }
-  colnames(sampleStats) <- c("NRep", "Mean", "AbsErr_Mean", "Variance", "AbsEr_Var")
-  # -----------------------------------------------------------------------------
-  
-  return (sampleStats)
-}
+<!--     sampleStats  <- rbind(sampleStats,  -->
+<!--                            c(sampleRepetition[i], xbar, abs((mu - xbar)/xbar), -->
+<!--                              variance, abs((var - variance)/variance))) -->
+<!--   } -->
+<!--   colnames(sampleStats) <- c("NRep", "Mean", "AbsErr_Mean", "Variance", "AbsEr_Var") -->
+<!--   # ----------------------------------------------------------------------------- -->
 
-if(RUN_VERIFY_STATS & TRUE)
-{
-  lambda       <- 0.2
-  sampleSize   <- 40
-  mu           <- 1/lambda
-  var          <- mu^2/sqrt(sampleSize)
-  sampleRepetition  <- c(10, 20, 30, 40)
+<!--   return (sampleStats) -->
+<!-- } -->
 
-  simData           <- generateSimData(sampleRepetition, sampleSize, lambda)
-  meanDistributions <- calcMeanDistributions(sampleRepetition, simData)
-  sampleMeansStats  <- getSampleMeansStats(sampleRepetition, meanDistributions, mu, var)
-  print("RUN_VERIFY_STATS: sampleMeansStats")
-  print(sampleMeansStats)
-}
+<!-- if(RUN_VERIFY_STATS & TRUE) -->
+<!-- { -->
+<!--   lambda       <- 0.2 -->
+<!--   sampleSize   <- 40 -->
+<!--   mu           <- 1/lambda -->
+<!--   var          <- mu^2/sqrt(sampleSize) -->
+<!--   sampleRepetition  <- c(10, 20, 30, 40) -->
 
-```
+<!--   simData           <- generateSimData(sampleRepetition, sampleSize, lambda) -->
+<!--   meanDistributions <- calcMeanDistributions(sampleRepetition, simData) -->
+<!--   sampleMeansStats  <- getSampleMeansStats(sampleRepetition, meanDistributions, mu, var) -->
+<!--   print("RUN_VERIFY_STATS: sampleMeansStats") -->
+<!--   print(sampleMeansStats) -->
+<!-- } -->
+
+<!-- ``` -->
 
 ### imageConvergence
 
-<!-- # ```{r smGraph, echo = FALSE, results = 'hide'} -->
+<!-- <!-- # ```{r smGraph, echo = FALSE, results = 'hide'} --> -->
 
-```{r imageConvergence, echo = FALSE, fig.dim = c(4, 2)}
+<!-- ```{r imageConvergence, echo = FALSE, fig.dim = c(4, 2)} -->
 
-imageConvergence <- function(sampleRepetition, sampleMeansStats)
-{
-  if(RUN_VERIFY_CONVERGE_IMG & VERIFY_CONVERGE_IMG & FALSE)
-  {
-    print("imageConvergence: verify inputs")
-    print(paste0("sampleRepetitions = ", sampleRepetition))
-    print(paste0("sampleMeansStats  = ", sampleMeansStats))
-  }
+<!-- imageConvergence <- function(sampleRepetition, sampleMeansStats) -->
+<!-- { -->
+<!--   if(RUN_VERIFY_CONVERGE_IMG & VERIFY_CONVERGE_IMG & FALSE) -->
+<!--   { -->
+<!--     print("imageConvergence: verify inputs") -->
+<!--     print(paste0("sampleRepetitions = ", sampleRepetition)) -->
+<!--     print(paste0("sampleMeansStats  = ", sampleMeansStats)) -->
+<!--   } -->
 
-  # ----------------------------------------------------------------------------------
-  sampleMeansStats <- cbind(sampleMeansStats, variance = sampleMeansStats$Variance + 5)
-  # ----------------------------------------------------------------------------------
-  
- if(RUN_VERIFY_CONVERGE_IMG & VERIFY_CONVERGE_IMG & FALSE)
-  {
-    print(paste0("sampleMeansStats  = ", sampleMeansStats))
-  }
-  
+<!--   # ---------------------------------------------------------------------------------- -->
+<!--   sampleMeansStats <- cbind(sampleMeansStats, variance = sampleMeansStats$Variance + 5) -->
+<!--   # ---------------------------------------------------------------------------------- -->
 
-  # ----------------------------------------------------------------------------------
-  graphTics   <- c(5, 10, 100, 1000, 10000, 100000, 1000000, 10000000)
+<!--  if(RUN_VERIFY_CONVERGE_IMG & VERIFY_CONVERGE_IMG & FALSE) -->
+<!--   { -->
+<!--     print(paste0("sampleMeansStats  = ", sampleMeansStats)) -->
+<!--   } -->
 
-  plt <- ggplot(sampleMeansStats, aes(x = NRep)) +
-    geom_hline(yintercept = 5, color="gray", linewidth = 0.5) +
-    geom_hline(yintercept = 5.625, color="pink", linewidth = 0.5) +
-    geom_line(aes(y=Mean, color='Mean')) +
-    geom_line(aes(y=variance, color='Variance')) +
-    scale_x_log10(breaks = graphTics, limits = c(sampleRepetition[1],
-                  sampleRepetition[28]+1)) +
-    scale_y_continuous(limits = c( 4.0, 6.0 ), "Mean",
-    sec.axis = sec_axis(~ . - 5.0, name = "Variance")) +
-    ggtitle("Sample Mean and Variance") + xlab("Sample Size (log n)") +
-    scale_color_manual(
-      name='Statistic', breaks=c('Mean', 'Variance'),
-      values=c('Mean'='black', 'Variance'='red')) #+
-    theme(plot.title = element_text(size = 10, hjust = 0.5),
-          axis.title.x = element_text(size = 8),
-          axis.title.y = element_text(size = 8),
-          axis.text.x = element_text(face="bold", size=6),
-          axis.text.y = element_text(face="bold", size=6),
-          legend.title = element_text(size = 6),
-          legend.text = element_text(size = 6),
-          legend.key.size = unit(2, 'mm'),
-          legend.position = c(0.85, 0.75))
 
-  ggsave(plot = plt, width = 4.0, height = 2.5, dpi = 300,
-         filename = "converge.png")
-  # ----------------------------------------------------------------------------------
-}
+<!--   # ---------------------------------------------------------------------------------- -->
+<!--   graphTics   <- c(5, 10, 100, 1000, 10000, 100000, 1000000, 10000000) -->
 
-if(RUN_VERIFY_CONVERGE_IMG & FALSE)
-{
-  lambda       <- 0.2
-  sampleSize   <- 40
-  mu           <- 1/lambda
-  var          <- mu^2/sqrt(sampleSize)
-  sampleRepetition  <- c(10, 100, 1000, 10000, 100000, 1000000, 10000000)
+<!--   plt <- ggplot(sampleMeansStats, aes(x = NRep)) + -->
+<!--     geom_hline(yintercept = 5, color="gray", linewidth = 0.5) + -->
+<!--     geom_hline(yintercept = 5.625, color="pink", linewidth = 0.5) + -->
+<!--     geom_line(aes(y=Mean, color='Mean')) + -->
+<!--     geom_line(aes(y=variance, color='Variance')) + -->
+<!--     scale_x_log10(breaks = graphTics, limits = c(sampleRepetition[1], -->
+<!--                   sampleRepetition[28]+1)) + -->
+<!--     scale_y_continuous(limits = c( 4.0, 6.0 ), "Mean", -->
+<!--     sec.axis = sec_axis(~ . - 5.0, name = "Variance")) + -->
+<!--     ggtitle("Sample Mean and Variance") + xlab("Sample Size (log n)") + -->
+<!--     scale_color_manual( -->
+<!--       name='Statistic', breaks=c('Mean', 'Variance'), -->
+<!--       values=c('Mean'='black', 'Variance'='red')) #+ -->
+<!--     theme(plot.title = element_text(size = 10, hjust = 0.5), -->
+<!--           axis.title.x = element_text(size = 8), -->
+<!--           axis.title.y = element_text(size = 8), -->
+<!--           axis.text.x = element_text(face="bold", size=6), -->
+<!--           axis.text.y = element_text(face="bold", size=6), -->
+<!--           legend.title = element_text(size = 6), -->
+<!--           legend.text = element_text(size = 6), -->
+<!--           legend.key.size = unit(2, 'mm'), -->
+<!--           legend.position = c(0.85, 0.75)) -->
 
-  simData           <- generateSimData(sampleRepetition, sampleSize, lambda)
-  meanDistributions <- calcMeanDistributions(sampleRepetition, simData)
-  sampleMeansStats  <- getSampleMeansStats(sampleRepetition, meanDistributions, mu, var)
-  imageConvergence(sampleRepetition, sampleMeansStats)
-  
-  print("RUN_VERIFY_CONVERGE: : check image")
-  print(sampleMeansStats)
-}
+<!--   ggsave(plot = plt, width = 4.0, height = 2.5, dpi = 300, -->
+<!--          filename = "converge.png") -->
+<!--   # ---------------------------------------------------------------------------------- -->
+<!-- } -->
 
-```
+<!-- if(RUN_VERIFY_CONVERGE_IMG & FALSE) -->
+<!-- { -->
+<!--   lambda       <- 0.2 -->
+<!--   sampleSize   <- 40 -->
+<!--   mu           <- 1/lambda -->
+<!--   var          <- mu^2/sqrt(sampleSize) -->
+<!--   sampleRepetition  <- c(10, 100, 1000, 10000, 100000, 1000000, 10000000) -->
 
-```{=tex}
-<!-- \begin{wrapfigure}{r}{0.5\textwidth} -->
-<!--   \centering -->
-<!--     \includegraphics[width=\linewidth]{converge.png} -->
-<!-- \end{wrapfigure} -->
-```
+<!--   simData           <- generateSimData(sampleRepetition, sampleSize, lambda) -->
+<!--   meanDistributions <- calcMeanDistributions(sampleRepetition, simData) -->
+<!--   sampleMeansStats  <- getSampleMeansStats(sampleRepetition, meanDistributions, mu, var) -->
+<!--   imageConvergence(sampleRepetition, sampleMeansStats) -->
+
+<!--   print("RUN_VERIFY_CONVERGE: : check image") -->
+<!--   print(sampleMeansStats) -->
+<!-- } -->
+
+<!-- ``` -->
+
+<!-- ```{=tex} -->
+<!-- <!-- \begin{wrapfigure}{r}{0.5\textwidth} --> -->
+<!-- <!--   \centering --> -->
+<!-- <!--     \includegraphics[width=\linewidth]{converge.png} --> -->
+<!-- <!-- \end{wrapfigure} --> -->
+<!-- ``` -->
+
 ### imageMeanDistribution
 
-<!-- # ```{r echo = FALSE, warning = FALSE, results = 'hide', fig.dim = c(4, 3)} -->
+<!-- <!-- # ```{r echo = FALSE, warning = FALSE, results = 'hide', fig.dim = c(4, 3)} --> -->
 
-```{r imageDistribution, echo = FALSE, warning = FALSE, fig.dim = c(4, 3)}
+<!-- ```{r imageDistribution, echo = FALSE, warning = FALSE, fig.dim = c(4, 3)} -->
 
-imageMeanDistribution <- function(sampleRepetition, sampleSize, meanDistributions, 
-                                  binRange, binName, mu, var)
-{
-  if(RUN_MEAN_DIST_IMG & VERIFY_MEAN_DIST_IMG & FALSE)
-  {
-    print("imageMeanDistribution: verify inputs")
-    print(paste0("sampleRepetitions = ", sampleRepetition))
-    print(paste0("binRange          = ", binRange))
-    print(paste0("binName           = ", binName))
-    print(paste0("binName           = ", class(binName)))
-    print(paste0("sampleSize        = ", sampleSize))
-    # print("meanDistributions = ")
-    # print(meanDistributions)
-    print("Test meanDistributions separately")
-  }
+<!-- imageMeanDistribution <- function(sampleRepetition, sampleSize, meanDistributions,  -->
+<!--                                   binRange, binName, mu, var) -->
+<!-- { -->
+<!--   if(RUN_MEAN_DIST_IMG & VERIFY_MEAN_DIST_IMG & FALSE) -->
+<!--   { -->
+<!--     print("imageMeanDistribution: verify inputs") -->
+<!--     print(paste0("sampleRepetitions = ", sampleRepetition)) -->
+<!--     print(paste0("binRange          = ", binRange)) -->
+<!--     print(paste0("binName           = ", binName)) -->
+<!--     print(paste0("binName           = ", class(binName))) -->
+<!--     print(paste0("sampleSize        = ", sampleSize)) -->
+<!--     # print("meanDistributions = ") -->
+<!--     # print(meanDistributions) -->
+<!--     print("Test meanDistributions separately") -->
+<!--   } -->
 
-  # -----------------------------------------------------------------------------
-  label <- c("a", "b","c","d")
-  pltList <- list()
+<!--   # ----------------------------------------------------------------------------- -->
+<!--   label <- c("a", "b","c","d") -->
+<!--   pltList <- list() -->
 
-  for (i in 1:length(sampleRepetition)) {
-    frame  <- data.frame(pdf = meanDistributions[[i]])
-    colnames(frame) <- c("pdf")
+<!--   for (i in 1:length(sampleRepetition)) { -->
+<!--     frame  <- data.frame(pdf = meanDistributions[[i]]) -->
+<!--     colnames(frame) <- c("pdf") -->
 
-    # ###########################################################################
-    if(RUN_MEAN_DIST_IMG & VERIFY_MEAN_DIST_IMG & FALSE)
-    {
-      print(paste0("imageMeanDistribution: len binRange:    ", length(binRange)))
-      print(paste0("imageMeanDistribution: len binName:     ", length(binName)))
-      print(paste0("imageMeanDistribution: len binName:     ", binName))
-      print("imageMeanDistribution: -------------------- frame")
-      print(frame)
-    }
-    # ###########################################################################
+<!--     # ########################################################################### -->
+<!--     if(RUN_MEAN_DIST_IMG & VERIFY_MEAN_DIST_IMG & FALSE) -->
+<!--     { -->
+<!--       print(paste0("imageMeanDistribution: len binRange:    ", length(binRange))) -->
+<!--       print(paste0("imageMeanDistribution: len binName:     ", length(binName))) -->
+<!--       print(paste0("imageMeanDistribution: len binName:     ", binName)) -->
+<!--       print("imageMeanDistribution: -------------------- frame") -->
+<!--       print(frame) -->
+<!--     } -->
+<!--     # ########################################################################### -->
 
-    pltList[[i]] <- ggplot(frame, aes(x = pdf)) +
-      geom_histogram(aes(y=..density..), breaks = binRange, fill="gray", color="#e9ecef") +
-      geom_vline(aes(xintercept=mean(pdf)), color="black", size = 0.5) +
-      geom_density(alpha = 0.2, fill="black")  +
-      stat_function(fun = function (x)
-        dnorm(x, mean =  mu, sd = mu/sqrt(sampleSize)),
-        color = "green", fill = "green",
-                geom = "area", alpha = 0.2) +
-      ggtitle(paste0("Sample Mean with n = ", sampleRepetition[i])) +
-      scale_x_continuous(limits = c(2.5, 7.5), "Mean") +
-      scale_y_continuous(limits = c(-0.1, 1.1), "Count")
-  }
+<!--     pltList[[i]] <- ggplot(frame, aes(x = pdf)) + -->
+<!--       geom_histogram(aes(y=..density..), breaks = binRange, fill="gray", color="#e9ecef") + -->
+<!--       geom_vline(aes(xintercept=mean(pdf)), color="black", size = 0.5) + -->
+<!--       geom_density(alpha = 0.2, fill="black")  + -->
+<!--       stat_function(fun = function (x) -->
+<!--         dnorm(x, mean =  mu, sd = mu/sqrt(sampleSize)), -->
+<!--         color = "green", fill = "green", -->
+<!--                 geom = "area", alpha = 0.2) + -->
+<!--       ggtitle(paste0("Sample Mean with n = ", sampleRepetition[i])) + -->
+<!--       scale_x_continuous(limits = c(2.5, 7.5), "Mean") + -->
+<!--       scale_y_continuous(limits = c(-0.1, 1.1), "Count") -->
+<!--   } -->
 
-  # ###########################################################################
-  # ###########################################################################
-  # d<-density(frame[["pdf"]])
-  # dd <- approxfun(d$x, d$y)
-  # val <- dd(mean(frame[["pdf"]]))
-  # print(val)
-  # print(mean(frame[["pdf"]]))
+<!--   # ########################################################################### -->
+<!--   # ########################################################################### -->
+<!--   # d<-density(frame[["pdf"]]) -->
+<!--   # dd <- approxfun(d$x, d$y) -->
+<!--   # val <- dd(mean(frame[["pdf"]])) -->
+<!--   # print(val) -->
+<!--   # print(mean(frame[["pdf"]])) -->
 
-  d<-density(binRange)
-  print("dx")
-  print(d$x)
-  print("dy")
-  print(d$y)
-  dd <- approxfun(d$x, d$y)
-  val <- dd(mean(binRange))
-  print(val)
-  print(mean(binRange))
+<!--   d<-density(binRange) -->
+<!--   print("dx") -->
+<!--   print(d$x) -->
+<!--   print("dy") -->
+<!--   print(d$y) -->
+<!--   dd <- approxfun(d$x, d$y) -->
+<!--   val <- dd(mean(binRange)) -->
+<!--   print(val) -->
+<!--   print(mean(binRange)) -->
 
-  # vals <- ggplot_build(pltList[[1]])$data[[1]]
-  # print(vals)
-  # ###########################################################################
-  # ###########################################################################
+<!--   # vals <- ggplot_build(pltList[[1]])$data[[1]] -->
+<!--   # print(vals) -->
+<!--   # ########################################################################### -->
+<!--   # ########################################################################### -->
 
-  plt <- ggarrange(pltList[[1]], pltList[[2]], pltList[[3]], pltList[[4]],
-          labels = label,
-          ncol = 2, nrow = 2)
+<!--   plt <- ggarrange(pltList[[1]], pltList[[2]], pltList[[3]], pltList[[4]], -->
+<!--           labels = label, -->
+<!--           ncol = 2, nrow = 2) -->
 
-  ggsave(plot = plt, width = 6.0, height = 4.0, dpi = 300,
-         filename = "distribution.png")
-  # -----------------------------------------------------------------------------
+<!--   ggsave(plot = plt, width = 6.0, height = 4.0, dpi = 300, -->
+<!--          filename = "distribution.png") -->
+<!--   # ----------------------------------------------------------------------------- -->
 
-}
+<!-- } -->
 
-if(RUN_MEAN_DIST_IMG & TRUE)
-{
-  lambda       <- 0.2
-  sampleSize   <- 40
-  mu           <- 1/lambda
-  var          <- mu^2/sqrt(sampleSize)
-  sampleRepetition  <- c(10, 20, 30, 1000)
-  binRange          <- seq(2.5, 7.5, by = 0.25)
-  binName           <- list()
+<!-- if(RUN_MEAN_DIST_IMG & TRUE) -->
+<!-- { -->
+<!--   lambda       <- 0.2 -->
+<!--   sampleSize   <- 40 -->
+<!--   mu           <- 1/lambda -->
+<!--   var          <- mu^2/sqrt(sampleSize) -->
+<!--   sampleRepetition  <- c(10, 20, 30, 1000) -->
+<!--   binRange          <- seq(2.5, 7.5, by = 0.25) -->
+<!--   binName           <- list() -->
 
-  for (i in 1:(length(binRange)-1)) {
-    # print(paste0("[", binRange[i], ", ", binRange[i+1], ")"))
-    binName <- append(binName, paste0("[", binRange[i], ", ", binRange[i+1], ")"))
-  }
+<!--   for (i in 1:(length(binRange)-1)) { -->
+<!--     # print(paste0("[", binRange[i], ", ", binRange[i+1], ")")) -->
+<!--     binName <- append(binName, paste0("[", binRange[i], ", ", binRange[i+1], ")")) -->
+<!--   } -->
 
-  simData           <- generateSimData(sampleRepetition, sampleSize, lambda)
-  meanDistributions <- calcMeanDistributions(sampleRepetition, simData)
-  imageMeanDistribution(sampleRepetition, sampleSize, meanDistributions, 
-                        binRange, binName, mu, var)
-  print("RUN_MEAN_DIST_IMG: check image")
-}
-
-
-```
-
-```{=tex}
-\begin{wrapfigure}{r}{0.5\textwidth}
-  \centering
-    \includegraphics[width=\linewidth]{distribution.png}
-\end{wrapfigure}
-```
-### generateToothData
-
-```{r generateToothData, echo=FALSE}
-
-generateToothData <- function (ToothGrowth)
-{
-  if(VERIFY_TOOTH_DATA & RUN_VERIFY_TOOTH_DATA & FALSE)
-  {
-    print("generateToothData: verify inputs")
-    print("ToothGrowth = ")
-    print(ToothGrowth)
-  }
-
-  # -----------------------------------------------------------------------------
-  allFactor   <- as.factor(paste0(ToothGrowth$supp, "-", ToothGrowth$dose))
-  ToothGrowth <- cbind(ToothGrowth, allFactor)
-  # -----------------------------------------------------------------------------
-
-  if(VERIFY_TOOTH_DATA & RUN_VERIFY_TOOTH_DATA & TRUE)
-  {
-    print("generateToothData: output")
-    print("ToothGrowth = ")
-    print(ToothGrowth)
-  }
-
-  return (ToothGrowth)
-
-}
-
-if(RUN_VERIFY_TOOTH_DATA & FALSE)
-{
-  doses      = c(0.5, 1.0, 2.0) # mg/day
-  supplement = c("OJ", "AA")    # supplement of AA, OJ - Orange Juice, AA - Ascorbic Acid
-
-  nPigs    <- 60
-  nLength  <- nPigs/(length(doses)*length(supplement))
-  nBins    <- nPigs/nLength
-  # bw       <- c(3, 3, 4, 3, 3, 4)
-
-  ToothGrowth <- generateToothData(ToothGrowth)
-  print("RUN_VERIFY_TOOTH_DATA: ToothGrowth data")
-  print(ToothGrowth)
-}
+<!--   simData           <- generateSimData(sampleRepetition, sampleSize, lambda) -->
+<!--   meanDistributions <- calcMeanDistributions(sampleRepetition, simData) -->
+<!--   imageMeanDistribution(sampleRepetition, sampleSize, meanDistributions,  -->
+<!--                         binRange, binName, mu, var) -->
+<!--   print("RUN_MEAN_DIST_IMG: check image") -->
+<!-- } -->
 
 
-```
+<!-- ``` -->
 
-### generateToothImage
-
-<!-- , results = 'hide' -->
-
-```{r echo = FALSE, warning = FALSE, fig.dim = c(8, 4)}
-
-generateToothImage <- function (ToothGrowth)
-{
-  if(VERIFY_TOOTH_IMG & RUN_VERIFY_TOOTH_IMG & TRUE)
-  {
-    print("generateToothImage: verify inputs")
-    print("ToothGrowth = ")
-    print(ToothGrowth)
-  }
-
-  # -----------------------------------------------------------------------------
-ToothGrowth$dotColor <- c(rep("blue",10),
-                          rep("green",10),
-                          rep("orange",10),
-                          rep("purple",10),
-                          rep("yellow",10),
-                          rep("red",10))
-
-plt <- ggplot(ToothGrowth, aes_string(x = "allFactor", y = "len")) +
-  geom_boxplot() +
-  geom_dotplot(binaxis='y',
-               stackdir='center',
-               dotsize = 0.5,
-               fill = ToothGrowth$dotColor) +
-  labs(title="Effect of Vitamin C on Tooth Growth",
-       subtitle="Supplement and Dosage",
-       caption="Source: C. I. Bliss (1952). The Statistics of Bioassay. Academic Press.",
-       x="Supplement (OJ, VC), Dosage(0.5, 1.0, 2.0)",
-       y="Tooth Length")
-
-
-ggsave(plot = plt, width = 4.0, height = 3.5, dpi = 300,
-       filename = "tooth.png")
-  # -----------------------------------------------------------------------------
-
-}
-
-if(RUN_VERIFY_TOOTH_IMG & TRUE)
-{
-  ToothGrowth <- generateToothData(ToothGrowth)
-  generateToothImage(ToothGrowth)
-  print("RUN_VERIFY_TOOTH_IMG: check image")
-}
-
-```
-
-```{=tex}
+<!-- ```{=tex} -->
 <!-- \begin{wrapfigure}{r}{0.5\textwidth} -->
 <!--   \centering -->
-<!--     \includegraphics[width=\linewidth]{tooth.png} -->
+<!--     \includegraphics[width=\linewidth]{distribution.png} -->
 <!-- \end{wrapfigure} -->
-```
-## Tables
+<!-- ``` -->
+<!-- ### generateToothData -->
 
-### generateConvergeTable
+<!-- ```{r generateToothData, echo=FALSE} -->
 
-```{r generateConvergeTable, echo = FALSE}
-generateConvergeTable <- function (sampleMeansStats)
-{
-  if(RUN_VERIFY_CONVERGE_TABLE & VERIFY_CONVERGE_TABLE & TRUE)
-  {
-    print("imageConvergence: verify inputs")
-    print(paste0("sampleMeansStats  = ", sampleMeansStats))
-  }
+<!-- generateToothData <- function (ToothGrowth) -->
+<!-- { -->
+<!--   if(VERIFY_TOOTH_DATA & RUN_VERIFY_TOOTH_DATA & FALSE) -->
+<!--   { -->
+<!--     print("generateToothData: verify inputs") -->
+<!--     print("ToothGrowth = ") -->
+<!--     print(ToothGrowth) -->
+<!--   } -->
 
-  # damageTable <- damageTable %>%
-  #   select(eval(parse(text = TABLE_FIELDS[[damageType]])))
+<!--   # ----------------------------------------------------------------------------- -->
+<!--   allFactor   <- as.factor(paste0(ToothGrowth$supp, "-", ToothGrowth$dose)) -->
+<!--   ToothGrowth <- cbind(ToothGrowth, allFactor) -->
+<!--   # ----------------------------------------------------------------------------- -->
 
-  # -----------------------------------------------------------------------------
-  resTable <- knitr::kable(sampleMeansStats, "latex",
-    caption = paste0("Table 1"),
-    digits = 3, align = "lrrr",
-    col.names = c("NObs", "Mean", "Mean Error", "Var", "Var Error"), row.names = TRUE
-    ) %>%
-    kable_styling(bootstrap_options = c("striped", "hover"),
-                  full_width = F,
-                  position = "left",
-                  font_size = 10) %>%
-    column_spec(column=1, width="1cm") %>%
-    column_spec(column=2, width="3cm") %>%
-    column_spec(column=3, width="2cm") %>%
-    column_spec(column=4, width="2cm") %>%
-    kable_classic_2()
-  # -----------------------------------------------------------------------------
+<!--   if(VERIFY_TOOTH_DATA & RUN_VERIFY_TOOTH_DATA & TRUE) -->
+<!--   { -->
+<!--     print("generateToothData: output") -->
+<!--     print("ToothGrowth = ") -->
+<!--     print(ToothGrowth) -->
+<!--   } -->
 
-  return (resTable)
+<!--   return (ToothGrowth) -->
 
-}
+<!-- } -->
 
-if(RUN_VERIFY_CONVERGE_TABLE & TRUE)
-{
-  lambda       <- 0.2
-  sampleSize   <- 40
-  mu           <- 1/lambda
-  var          <- mu^2/sqrt(sampleSize)
-  sampleRepetition  <- c(10, 100, 1000, 10000, 100000, 1000000)
+<!-- if(RUN_VERIFY_TOOTH_DATA & FALSE) -->
+<!-- { -->
+<!--   doses      = c(0.5, 1.0, 2.0) # mg/day -->
+<!--   supplement = c("OJ", "AA")    # supplement of AA, OJ - Orange Juice, AA - Ascorbic Acid -->
 
-  simData           <- generateSimData(sampleRepetition, sampleSize, lambda)
-  meanDistributions <- calcMeanDistributions(sampleRepetition, simData)
-  sampleMeansStats  <- getSampleMeansStats(sampleRepetition, meanDistributions, mu, var)
-  resTable          <- generateConvergeTable(sampleMeansStats)
-  
+<!--   nPigs    <- 60 -->
+<!--   nLength  <- nPigs/(length(doses)*length(supplement)) -->
+<!--   nBins    <- nPigs/nLength -->
+<!--   # bw       <- c(3, 3, 4, 3, 3, 4) -->
 
-  
-  print("RUN_VERIFY_CONVERGE_TABLE: : resTable")
-  resTable
-}
-
-```
-
-## Summaries
-
-### generateToothSummaries
-
-```{r, echo = FALSE}
-
- # Hypotheses:
- #  Difference of tooth length do to VC or OJ is zero
- #  Difference between {0.5, 1.0}, {0.5, 2.0},  {1.0, 2.0} are all zero
- # 
- # The number of observstions for each sample are the same (supplement = 30, dose = 20)
- # Find the difference in mean, and variance
- # 
- # t.test(father.son$sheight - father.son$fheight)
- # 
- # 
+<!--   ToothGrowth <- generateToothData(ToothGrowth) -->
+<!--   print("RUN_VERIFY_TOOTH_DATA: ToothGrowth data") -->
+<!--   print(ToothGrowth) -->
+<!-- } -->
 
 
-generateToothSummaries <- function(teeth)
-{
-  if(RUN_VERIFY_TOOTH_SUMMARY & VERIFY_TOOTH_SUMMARY & TRUE)
-  {
-    print("generateToothSummaries: verify inputs")
-    print(paste0("ToothGrowth  = ", teeth))
-  }
+<!-- ``` -->
 
-  # -----------------------------------------------------------------------------
-  
-  fullData <- rbind(teeth[[1]], teeth[[2]], teeth[[3]], 
-                    teeth[[4]], teeth[[5]], teeth[[6]])
-  fullSummary <- summary(fullData)
+<!-- ### generateToothImage -->
 
-  vc0.5_1.0.Data <- rbind(teeth[[1]], teeth[[2]])
-  vc1.0_2.0.Data <- rbind(teeth[[1]], teeth[[3]])
-  vc0.5_2.0.Data <- rbind(teeth[[2]], teeth[[3]])
+<!-- <!-- , results = 'hide' --> -->
 
-  oj0.5_1.0.Data <- rbind(teeth[[4]], teeth[[5]])
-  oj1.0_2.0.Data <- rbind(teeth[[4]], teeth[[6]])
-  oj0.5_2.0.Data <- rbind(teeth[[5]], teeth[[6]])
+<!-- ```{r echo = FALSE, warning = FALSE, fig.dim = c(8, 4)} -->
 
-  vc_ojd0.5.Data <- rbind(teeth[[1]], teeth[[4]])
-  vc_ojd1.0.Data <- rbind(teeth[[2]], teeth[[5]])
-  vc_ojd2.0.Data <- rbind(teeth[[3]], teeth[[6]])
+<!-- generateToothImage <- function (ToothGrowth) -->
+<!-- { -->
+<!--   if(VERIFY_TOOTH_IMG & RUN_VERIFY_TOOTH_IMG & TRUE) -->
+<!--   { -->
+<!--     print("generateToothImage: verify inputs") -->
+<!--     print("ToothGrowth = ") -->
+<!--     print(ToothGrowth) -->
+<!--   } -->
 
-  vc0.5_1.0.Summary <- summary(vc0.5_1.0.Data)
-  vc1.0_2.0.Summary <- summary(vc1.0_2.0.Data)
-  vc0.5_2.0.Summary <- summary(vc0.5_2.0.Data)
+<!--   # ----------------------------------------------------------------------------- -->
+<!-- ToothGrowth$dotColor <- c(rep("blue",10), -->
+<!--                           rep("green",10), -->
+<!--                           rep("orange",10), -->
+<!--                           rep("purple",10), -->
+<!--                           rep("yellow",10), -->
+<!--                           rep("red",10)) -->
 
-  oj0.5_1.0.Summary <- summary(oj0.5_1.0.Data)
-  oj1.0_2.0.Summary <- summary(oj1.0_2.0.Data)
-  oj0.5_2.0.Summary <- summary(oj0.5_2.0.Data)
-
-  vc_ojd0.5.Summary <- summary(vc_ojd0.5.Data)
-  vc_ojd1.0.Summary <- summary(vc_ojd1.0.Data)
-  vc_ojd2.0.Summary <- summary(vc_ojd2.0.Data)
-
-  vc0.5_1.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = vc0.5_1.0.Data)
-  vc0.5_1.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = vc0.5_1.0.Data)
-  vc0.5_2.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = vc0.5_2.0.Data)
-
-  oj0.5_1.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = oj0.5_1.0.Data)
-  oj1.0_2.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = oj1.0_2.0.Data)
-  oj0.5_2.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = oj0.5_2.0.Data)
-
-  vc_ojd0.5.T <- t.test(len ~ supp, paired = FALSE, var.equal = FALSE, data = vc_ojd0.5.Data)
-  vc_ojd1.0.T <- t.test(len ~ supp, paired = FALSE, var.equal = FALSE, data = vc_ojd1.0.Data)
-  vc_ojd2.0.T <- t.test(len ~ supp, paired = FALSE, var.equal = FALSE, data = vc_ojd2.0.Data)
-
-  # -----------------------------------------------------------------------------
-  if((RUN_VERIFY_TOOTH_SUMMARY & VERIFY_TOOTH_SUMMARY) | TRUE)
-  {
-    print(vc0.5_1.0.T)
-    print(vc0.5_1.0.T)
-    print(vc0.5_2.0.T)
-
-    print(oj0.5_1.0.T)
-    print(oj1.0_2.0.T)
-    print(oj0.5_2.0.T)
-
-    print(vc_ojd0.5.T)
-    print(vc_ojd1.0.T)
-    print(vc_ojd2.0.T)
-  }
-
-  if((RUN_VERIFY_TOOTH_SUMMARY & VERIFY_TOOTH_SUMMARY) | TRUE)
-  {
-    # print(fullSummary)
-    # print(vcSummary)
-    # print(ojSummary)
-    # print(d0.5.Summary)
-    # print(d1.0.Summary)
-    # print(d2.0.Summary)
-  }
-}
-
-if(RUN_VERIFY_TOOTH_SUMMARY)
-{
-  supplement = c("OJ", "AA")    # supplement of AA, OJ - Orange Juice, AA - Ascorbic Acid
-  doses      = c(0.5, 1.0, 2.0) # mg/day
-  nPigs    <- 60
-  nLength  <- nPigs/(length(doses)*length(supplement))
-  teeth    <- list()
-  
-  ToothGrowth <- generateToothData(ToothGrowth)
-  for (i in 1:6) { 
-    start   <- ((i - 1) * nLength) + 1
-    finish  <- i * nLength
-    teeth[[i]] <- ToothGrowth[start : finish,]
-    print("tooth")
-    print(teeth[[i]])
-  }
-  
-  generateToothSummaries(teeth)
-}
-
-```
-
-### calcAreaDelta
-
-<!-- integrate.xy(xy$x,xy$y) -->
+<!-- plt <- ggplot(ToothGrowth, aes_string(x = "allFactor", y = "len")) + -->
+<!--   geom_boxplot() + -->
+<!--   geom_dotplot(binaxis='y', -->
+<!--                stackdir='center', -->
+<!--                dotsize = 0.5, -->
+<!--                fill = ToothGrowth$dotColor) + -->
+<!--   labs(title="Effect of Vitamin C on Tooth Growth", -->
+<!--        subtitle="Supplement and Dosage", -->
+<!--        caption="Source: C. I. Bliss (1952). The Statistics of Bioassay. Academic Press.", -->
+<!--        x="Supplement (OJ, VC), Dosage(0.5, 1.0, 2.0)", -->
+<!--        y="Tooth Length") -->
 
 
-```{r calcAreaDelta, echo=FALSE}
+<!-- ggsave(plot = plt, width = 4.0, height = 3.5, dpi = 300, -->
+<!--        filename = "tooth.png") -->
+<!--   # ----------------------------------------------------------------------------- -->
+
+<!-- } -->
+
+<!-- if(RUN_VERIFY_TOOTH_IMG & TRUE) -->
+<!-- { -->
+<!--   ToothGrowth <- generateToothData(ToothGrowth) -->
+<!--   generateToothImage(ToothGrowth) -->
+<!--   print("RUN_VERIFY_TOOTH_IMG: check image") -->
+<!-- } -->
+
+<!-- ``` -->
+
+<!-- ```{=tex} -->
+<!-- <!-- \begin{wrapfigure}{r}{0.5\textwidth} --> -->
+<!-- <!--   \centering --> -->
+<!-- <!--     \includegraphics[width=\linewidth]{tooth.png} --> -->
+<!-- <!-- \end{wrapfigure} --> -->
+<!-- ``` -->
+<!-- ## Tables -->
+
+<!-- ### generateConvergeTable -->
+
+<!-- ```{r generateConvergeTable, echo = FALSE} -->
+<!-- generateConvergeTable <- function (sampleMeansStats) -->
+<!-- { -->
+<!--   if(RUN_VERIFY_CONVERGE_TABLE & VERIFY_CONVERGE_TABLE & TRUE) -->
+<!--   { -->
+<!--     print("imageConvergence: verify inputs") -->
+<!--     print(paste0("sampleMeansStats  = ", sampleMeansStats)) -->
+<!--   } -->
+
+<!--   # damageTable <- damageTable %>% -->
+<!--   #   select(eval(parse(text = TABLE_FIELDS[[damageType]]))) -->
+
+<!--   # ----------------------------------------------------------------------------- -->
+<!--   resTable <- knitr::kable(sampleMeansStats, "latex", -->
+<!--     caption = paste0("Table 1"), -->
+<!--     digits = 3, align = "lrrr", -->
+<!--     col.names = c("NObs", "Mean", "Mean Error", "Var", "Var Error"), row.names = TRUE -->
+<!--     ) %>% -->
+<!--     kable_styling(bootstrap_options = c("striped", "hover"), -->
+<!--                   full_width = F, -->
+<!--                   position = "left", -->
+<!--                   font_size = 10) %>% -->
+<!--     column_spec(column=1, width="1cm") %>% -->
+<!--     column_spec(column=2, width="3cm") %>% -->
+<!--     column_spec(column=3, width="2cm") %>% -->
+<!--     column_spec(column=4, width="2cm") %>% -->
+<!--     kable_classic_2() -->
+<!--   # ----------------------------------------------------------------------------- -->
+
+<!--   return (resTable) -->
+
+<!-- } -->
+
+<!-- if(RUN_VERIFY_CONVERGE_TABLE & TRUE) -->
+<!-- { -->
+<!--   lambda       <- 0.2 -->
+<!--   sampleSize   <- 40 -->
+<!--   mu           <- 1/lambda -->
+<!--   var          <- mu^2/sqrt(sampleSize) -->
+<!--   sampleRepetition  <- c(10, 100, 1000, 10000, 100000, 1000000) -->
+
+<!--   simData           <- generateSimData(sampleRepetition, sampleSize, lambda) -->
+<!--   meanDistributions <- calcMeanDistributions(sampleRepetition, simData) -->
+<!--   sampleMeansStats  <- getSampleMeansStats(sampleRepetition, meanDistributions, mu, var) -->
+<!--   resTable          <- generateConvergeTable(sampleMeansStats) -->
 
 
-integrateF <- function(fun, delta, lower = 0 , upper = 0, mu = 0, sigma = 0)
-{
-  array <- list()
-  sum   <- 0.0
 
-  if((RUN_CALCULATE_AREA_D & VERIFY_CALCULATE_AREA_D) & FALSE)
-  {
-    print(paste0("class delta = ", class(delta)))
-    print(paste0("class mu    = ", class(mu)))
-    print(paste0("class sigma = ", class(sigma)))
-    print(paste0("pi = ", pi))
-  }
-  
-  iters <- (upper - lower)/delta
-  if (is.function(fun)) {
-    for (step in seq(lower, upper, delta)) {
-      # step <- i*delta
-      y   <- fun(step, mu, sigma)
-      sum <- sum + y*delta
-      print(paste0("step = ", step, " y = ", y, " sum = ", sum))
-    }
-  } else {
-    for (i in 1:iters){
-      # print(array[[i]]*delta)
-      sum = sum + fun[[i]]
-    }
-  }
-  if((RUN_CALCULATE_AREA_D & VERIFY_CALCULATE_AREA_D) & FALSE)
-  {
-    print("array ")
-    print(paste0("type array ", class(array)))
-    print(paste0("type array [1] ", class(array[1])))
-    print(paste0("type array [[1]] ", class(array[[1]])))
-    print(paste0("type array [[1]] ", array[[1]]))
-    print(paste0("type array [[1]] * 3 ", array[[1]] * delta))
-  }
+<!--   print("RUN_VERIFY_CONVERGE_TABLE: : resTable") -->
+<!--   resTable -->
+<!-- } -->
 
-  return (sum)
-}
+<!-- ``` -->
 
-calcAreaDelta <- function(sampleRepetition, meanDistributions, mu, sigma)
-{
-  if((RUN_CALCULATE_AREA_D & VERIFY_CALCULATE_AREA_D) & FALSE)
-  {
-    print("generateSimData: verify inputs")
-    print(paste0("sampleRepetitions = ", sampleRepetition))
-    print("meanDistributions = ")
-    print(meanDistributions)
-    # print("Test meanDistributions separately")
-  }
+<!-- ## Summaries -->
 
-  # ----------------------------------------------------------------------------------
-  normalF <- function(x, mu, sigma) {
-    # return(exp(-((x - mu)/ sigma)^2 / 2) / (sqrt(2*pi)*sigma))
-    return(exp(-((x - mu)/ sigma)^2 / 2) / (sqrt(2*pi)*sigma))
-  }
+<!-- ### generateToothSummaries -->
 
-  theoreticalArea = integrateF(normalF, 0.1, -10, 20, mu, sigma)
-  print(paste0("theoreticalArea = ", theoreticalArea)) 
-  for (i in 1:length(sampleRepetition)) {
-    samplePDF <- density(meanDistributions[[i]], from=0, to=9)
-    # sampleArea <- integrateF(meanDistributions[[i]], sampleRepetition[i], 0, 10)
-    # print(paste0("sampleArea[", i, "]", sampleArea))
-  }
-  # ----------------------------------------------------------------------------------
+<!-- ```{r, echo = FALSE} -->
 
-  return (meanDistributions)
-}
-
-if(RUN_CALCULATE_AREA_D & FALSE)
-{
-  sampleSize   <- 40
-  sampleRepetition  <- c(10, 20, 30, 40)
-  lambda       <- 0.2
-  mu           <- 1/lambda
-  sigma        <- mu
-
-  simData           <- generateSimData(sampleRepetition, sampleSize, lambda)
-  meanDistributions <- calcMeanDistributions(sampleRepetition, simData)
-
-  calcAreaDelta(sampleRepetition, meanDistributions, mu, sigma)
-
-  print("RUN_CALCULATE_AREA_D")
-
-}
+<!--  # Hypotheses: -->
+<!--  #  Difference of tooth length do to VC or OJ is zero -->
+<!--  #  Difference between {0.5, 1.0}, {0.5, 2.0},  {1.0, 2.0} are all zero -->
+<!--  #  -->
+<!--  # The number of observstions for each sample are the same (supplement = 30, dose = 20) -->
+<!--  # Find the difference in mean, and variance -->
+<!--  #  -->
+<!--  # t.test(father.son$sheight - father.son$fheight) -->
+<!--  #  -->
+<!--  #  -->
 
 
-```
+<!-- generateToothSummaries <- function(teeth) -->
+<!-- { -->
+<!--   if(RUN_VERIFY_TOOTH_SUMMARY & VERIFY_TOOTH_SUMMARY & TRUE) -->
+<!--   { -->
+<!--     print("generateToothSummaries: verify inputs") -->
+<!--     print(paste0("ToothGrowth  = ", teeth)) -->
+<!--   } -->
+
+<!--   # ----------------------------------------------------------------------------- -->
+
+<!--   fullData <- rbind(teeth[[1]], teeth[[2]], teeth[[3]],  -->
+<!--                     teeth[[4]], teeth[[5]], teeth[[6]]) -->
+<!--   fullSummary <- summary(fullData) -->
+
+<!--   vc0.5_1.0.Data <- rbind(teeth[[1]], teeth[[2]]) -->
+<!--   vc1.0_2.0.Data <- rbind(teeth[[1]], teeth[[3]]) -->
+<!--   vc0.5_2.0.Data <- rbind(teeth[[2]], teeth[[3]]) -->
+
+<!--   oj0.5_1.0.Data <- rbind(teeth[[4]], teeth[[5]]) -->
+<!--   oj1.0_2.0.Data <- rbind(teeth[[4]], teeth[[6]]) -->
+<!--   oj0.5_2.0.Data <- rbind(teeth[[5]], teeth[[6]]) -->
+
+<!--   vc_ojd0.5.Data <- rbind(teeth[[1]], teeth[[4]]) -->
+<!--   vc_ojd1.0.Data <- rbind(teeth[[2]], teeth[[5]]) -->
+<!--   vc_ojd2.0.Data <- rbind(teeth[[3]], teeth[[6]]) -->
+
+<!--   vc0.5_1.0.Summary <- summary(vc0.5_1.0.Data) -->
+<!--   vc1.0_2.0.Summary <- summary(vc1.0_2.0.Data) -->
+<!--   vc0.5_2.0.Summary <- summary(vc0.5_2.0.Data) -->
+
+<!--   oj0.5_1.0.Summary <- summary(oj0.5_1.0.Data) -->
+<!--   oj1.0_2.0.Summary <- summary(oj1.0_2.0.Data) -->
+<!--   oj0.5_2.0.Summary <- summary(oj0.5_2.0.Data) -->
+
+<!--   vc_ojd0.5.Summary <- summary(vc_ojd0.5.Data) -->
+<!--   vc_ojd1.0.Summary <- summary(vc_ojd1.0.Data) -->
+<!--   vc_ojd2.0.Summary <- summary(vc_ojd2.0.Data) -->
+
+<!--   vc0.5_1.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = vc0.5_1.0.Data) -->
+<!--   vc0.5_1.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = vc0.5_1.0.Data) -->
+<!--   vc0.5_2.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = vc0.5_2.0.Data) -->
+
+<!--   oj0.5_1.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = oj0.5_1.0.Data) -->
+<!--   oj1.0_2.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = oj1.0_2.0.Data) -->
+<!--   oj0.5_2.0.T <- t.test(len ~ dose, paired = FALSE, var.equal = FALSE, data = oj0.5_2.0.Data) -->
+
+<!--   vc_ojd0.5.T <- t.test(len ~ supp, paired = FALSE, var.equal = FALSE, data = vc_ojd0.5.Data) -->
+<!--   vc_ojd1.0.T <- t.test(len ~ supp, paired = FALSE, var.equal = FALSE, data = vc_ojd1.0.Data) -->
+<!--   vc_ojd2.0.T <- t.test(len ~ supp, paired = FALSE, var.equal = FALSE, data = vc_ojd2.0.Data) -->
+
+<!--   # ----------------------------------------------------------------------------- -->
+<!--   if((RUN_VERIFY_TOOTH_SUMMARY & VERIFY_TOOTH_SUMMARY) | TRUE) -->
+<!--   { -->
+<!--     print(vc0.5_1.0.T) -->
+<!--     print(vc0.5_1.0.T) -->
+<!--     print(vc0.5_2.0.T) -->
+
+<!--     print(oj0.5_1.0.T) -->
+<!--     print(oj1.0_2.0.T) -->
+<!--     print(oj0.5_2.0.T) -->
+
+<!--     print(vc_ojd0.5.T) -->
+<!--     print(vc_ojd1.0.T) -->
+<!--     print(vc_ojd2.0.T) -->
+<!--   } -->
+
+<!--   if((RUN_VERIFY_TOOTH_SUMMARY & VERIFY_TOOTH_SUMMARY) | TRUE) -->
+<!--   { -->
+<!--     # print(fullSummary) -->
+<!--     # print(vcSummary) -->
+<!--     # print(ojSummary) -->
+<!--     # print(d0.5.Summary) -->
+<!--     # print(d1.0.Summary) -->
+<!--     # print(d2.0.Summary) -->
+<!--   } -->
+<!-- } -->
+
+<!-- if(RUN_VERIFY_TOOTH_SUMMARY) -->
+<!-- { -->
+<!--   supplement = c("OJ", "AA")    # supplement of AA, OJ - Orange Juice, AA - Ascorbic Acid -->
+<!--   doses      = c(0.5, 1.0, 2.0) # mg/day -->
+<!--   nPigs    <- 60 -->
+<!--   nLength  <- nPigs/(length(doses)*length(supplement)) -->
+<!--   teeth    <- list() -->
+
+<!--   ToothGrowth <- generateToothData(ToothGrowth) -->
+<!--   for (i in 1:6) {  -->
+<!--     start   <- ((i - 1) * nLength) + 1 -->
+<!--     finish  <- i * nLength -->
+<!--     teeth[[i]] <- ToothGrowth[start : finish,] -->
+<!--     print("tooth") -->
+<!--     print(teeth[[i]]) -->
+<!--   } -->
+
+<!--   generateToothSummaries(teeth) -->
+<!-- } -->
+
+<!-- ``` -->
+
+<!-- ### calcAreaDelta -->
+
+<!-- <!-- integrate.xy(xy$x,xy$y) --> -->
+
+
+<!-- ```{r calcAreaDelta, echo=FALSE} -->
+
+
+<!-- integrateF <- function(fun, delta, lower = 0 , upper = 0, mu = 0, sigma = 0) -->
+<!-- { -->
+<!--   array <- list() -->
+<!--   sum   <- 0.0 -->
+
+<!--   if((RUN_CALCULATE_AREA_D & VERIFY_CALCULATE_AREA_D) & FALSE) -->
+<!--   { -->
+<!--     print(paste0("class delta = ", class(delta))) -->
+<!--     print(paste0("class mu    = ", class(mu))) -->
+<!--     print(paste0("class sigma = ", class(sigma))) -->
+<!--     print(paste0("pi = ", pi)) -->
+<!--   } -->
+
+<!--   iters <- (upper - lower)/delta -->
+<!--   if (is.function(fun)) { -->
+<!--     for (step in seq(lower, upper, delta)) { -->
+<!--       # step <- i*delta -->
+<!--       y   <- fun(step, mu, sigma) -->
+<!--       sum <- sum + y*delta -->
+<!--       print(paste0("step = ", step, " y = ", y, " sum = ", sum)) -->
+<!--     } -->
+<!--   } else { -->
+<!--     for (i in 1:iters){ -->
+<!--       # print(array[[i]]*delta) -->
+<!--       sum = sum + fun[[i]] -->
+<!--     } -->
+<!--   } -->
+<!--   if((RUN_CALCULATE_AREA_D & VERIFY_CALCULATE_AREA_D) & FALSE) -->
+<!--   { -->
+<!--     print("array ") -->
+<!--     print(paste0("type array ", class(array))) -->
+<!--     print(paste0("type array [1] ", class(array[1]))) -->
+<!--     print(paste0("type array [[1]] ", class(array[[1]]))) -->
+<!--     print(paste0("type array [[1]] ", array[[1]])) -->
+<!--     print(paste0("type array [[1]] * 3 ", array[[1]] * delta)) -->
+<!--   } -->
+
+<!--   return (sum) -->
+<!-- } -->
+
+<!-- calcAreaDelta <- function(sampleRepetition, meanDistributions, mu, sigma) -->
+<!-- { -->
+<!--   if((RUN_CALCULATE_AREA_D & VERIFY_CALCULATE_AREA_D) & FALSE) -->
+<!--   { -->
+<!--     print("generateSimData: verify inputs") -->
+<!--     print(paste0("sampleRepetitions = ", sampleRepetition)) -->
+<!--     print("meanDistributions = ") -->
+<!--     print(meanDistributions) -->
+<!--     # print("Test meanDistributions separately") -->
+<!--   } -->
+
+<!--   # ---------------------------------------------------------------------------------- -->
+<!--   normalF <- function(x, mu, sigma) { -->
+<!--     # return(exp(-((x - mu)/ sigma)^2 / 2) / (sqrt(2*pi)*sigma)) -->
+<!--     return(exp(-((x - mu)/ sigma)^2 / 2) / (sqrt(2*pi)*sigma)) -->
+<!--   } -->
+
+<!--   theoreticalArea = integrateF(normalF, 0.1, -10, 20, mu, sigma) -->
+<!--   print(paste0("theoreticalArea = ", theoreticalArea))  -->
+<!--   for (i in 1:length(sampleRepetition)) { -->
+<!--     samplePDF <- density(meanDistributions[[i]], from=0, to=9) -->
+<!--     # sampleArea <- integrateF(meanDistributions[[i]], sampleRepetition[i], 0, 10) -->
+<!--     # print(paste0("sampleArea[", i, "]", sampleArea)) -->
+<!--   } -->
+<!--   # ---------------------------------------------------------------------------------- -->
+
+<!--   return (meanDistributions) -->
+<!-- } -->
+
+<!-- if(RUN_CALCULATE_AREA_D & FALSE) -->
+<!-- { -->
+<!--   sampleSize   <- 40 -->
+<!--   sampleRepetition  <- c(10, 20, 30, 40) -->
+<!--   lambda       <- 0.2 -->
+<!--   mu           <- 1/lambda -->
+<!--   sigma        <- mu -->
+
+<!--   simData           <- generateSimData(sampleRepetition, sampleSize, lambda) -->
+<!--   meanDistributions <- calcMeanDistributions(sampleRepetition, simData) -->
+
+<!--   calcAreaDelta(sampleRepetition, meanDistributions, mu, sigma) -->
+
+<!--   print("RUN_CALCULATE_AREA_D") -->
+
+<!-- } -->
+
+
+<!-- ``` -->
 
 
 
@@ -839,3 +840,52 @@ if(RUN_CALCULATE_AREA_D & FALSE)
 
 \end{verbatim}
 ```
+
+
+```{r  echo=FALSE}
+# library(dplyr)
+# library(ggplot2)
+# library(gridExtra)    # grid.arrange
+# library(grid)
+# library(knitr)
+# library(tidyverse)
+# library(ggpubr)       # installs gridExtra and cowplot
+# library(matrixStats)
+# library(data.table)
+# library(sfsmisc)
+# library(kableExtra)
+# library(lemon)        # g_legend
+# library(ggplotify)
+# print("start")
+library(ggplot2)
+library(gtable)
+library(grid)
+library(gridExtra)
+library(gtable)
+library(lemon)        # g_legend
+
+dsamp <- diamonds[sample(nrow(diamonds), 1000), ]
+(d1 <- ggplot(dsamp, aes(carat, price)) +
+ geom_point(aes(colour = clarity)) +
+ theme(legend.position='bottom'))
+
+legend <- g_legend(d1)
+# grid.newpage()
+# grid.draw(legend)
+
+(d2 <- ggplot(dsamp, aes(x=carat, fill=clarity)) +
+  geom_histogram(binwidth=0.1) +
+ theme(legend.position='bottom'))
+
+print(paste0("class of d1 ", class(d1)))
+print(paste0("class of d2 ", class(d2)))
+print(paste0("typeof d1 ", typeof(d1)))
+print(paste0("typeof d2 ", typeof(d2)))
+print(paste0("legend ", legend))
+
+
+grid.arrange(d1  + theme(legend.position='hidden'),
+             d2 + theme(legend.position='hidden'),
+             bottom=legend$grobs[[1]])
+```
+
