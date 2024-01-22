@@ -41,7 +41,7 @@ library(gridExtra)
 library(dplyr)
 library(knitr)
 # library(tidyverse)
-# library(ggpubr)       # installs gridExtra and cowplot
+library(ggpubr)       # installs gridExtra and cowplot
 # library(matrixStats)
 # library(data.table)
 # library(sfsmisc)
@@ -50,8 +50,9 @@ library(kableExtra)
 # FALSE TRUE
 
 EXPERIMENT_SOURCE <- FALSE
-BASIC_ANALYSIS    <- FALSE
-BASIC_STATISTICS  <- FALSE
+EXPERIMENT_DATA   <- FALSE
+DOSE_IMAGE        <- FALSE
+SUMMARY_TABLE     <- FALSE
 CONFIDENCE_TESTS  <- FALSE
 EXECUTE           <- TRUE
 
@@ -64,7 +65,6 @@ EXECUTE           <- TRUE
 ### Source Data Constants
 
 ```{r SourceDataConstants, echo = TRUE}
-##
 ## BLOCK 1 Source Data Constants
 ##
 ## VCx0.5
@@ -81,9 +81,13 @@ EXECUTE           <- TRUE
 ##
 SUPPLEMENTS       <- c("VC", "OJ")
 DOSES             <- c("0.5", "1.0", "2.0")
+N_REPEATS         <- 10
 
-N_PROTOCOLS       <- length(SUPPLEMENTS) * length(DOSES)
-N_COMPARISONS     <- N_PROTOCOLS + length(SUPPLEMENTS) + length(DOSES)
+N_SUPPLEMENTS     <- length(SUPPLEMENTS)
+N_DOSES           <- length(DOSES)
+N_PROTOCOLS       <- N_SUPPLEMENTS * N_DOSES
+N_COMPARISONS     <- N_PROTOCOLS + N_SUPPLEMENTS + N_DOSES
+N_DATA_POINTS     <- N_REPEATS * N_PROTOCOLS
 
 reduceDigits <- function (number, digits) {
   trunc(number*10^digits)/10^digits
@@ -109,7 +113,7 @@ GetExperimentData <- function() {
       )
   
   for (i in 1:N_PROTOCOLS) {
-    experimentData$Length[i] <- 
+    experimentData$Length[i] <-
       list(ToothGrowth$len[((i - 1) * 10 + 1): (i*10)])
   }
   
@@ -118,90 +122,21 @@ GetExperimentData <- function() {
 
 ```
 
+## Image Analysis
 
-```{r GetSummaryData, echo = TRUE}
+### Set Image Data
 
-GetSummaryData <- function(experimentData) {
-  summaryData <-
-  data.frame(
-    SummaryCombinations = c("VCx0.5", "VCx1.0", "VCx2.0",
-                            "OJx0.5", "OJx1.0", "OJx2.0",
-                            "0.5", "1.0", "2.0", "VC", "OJ")
-    )
+```{r SetImageData, echo = TRUE}
 
-  for (i in 1:N_PROTOCOLS) {
-    summaryData$Length[i] <- experimentData$Length[i]
-  }
+setImageData <- function (experimentData)
+{
+  PlotDF            <- experimentData[rep(seq_len(nrow(experimentData)), each = 10), ]
+  PlotDF$Length     <- ToothGrowth$len
+  PlotDF <- PlotDF %>% mutate_at(c('Length'), as.numeric)
+  rownames(PlotDF)  <- c(1:N_DATA_POINTS)
 
-  k <- N_PROTOCOLS + 1
-  for (i in 1:(length(DOSES) - 1)) {
-    for (j in (i + 1):(length(DOSES))) {
-      summaryData$Length[k] <-
-        list(c(unlist(experimentData$Length[i]),
-               unlist(experimentData$Length[j])))
-      k <- k + 1
-    }
-  }
-  
-  k <- N_PROTOCOLS + 3 + 1  # 3 should be len(DOSES)!
-  for (i in seq(1,N_PROTOCOLS, 3)){
-    summaryData$Length[k] <- 
-      list(c(unlist(experimentData$Length[i]),
-           unlist(experimentData$Length[i + 1]),
-           unlist(experimentData$Length[i + 2])))
-
-    k <- k + 1
-  }
-  
-  return (summaryData)
+  return (PlotDF)
 }
-
-```
-
-### Image Constants
-
-```{r ImageConstants, echo = TRUE}
-
-  experimentData    <- GetExperimentData( )
-  PlotDF            <- data.frame(Length = c(ToothGrowth$len))
-  PlotDF$Color      <- 
-    c(rep("blue", 10), rep("yellow", 10), rep("red", 10),
-      rep("orange", 10), rep("purple", 10), rep("green", 10)
-      )
-
-  PlotDF$Protocol   <- 
-    c(rep("VCx0.5", 10), rep("VCx1.0", 10), rep("VCx2.0", 10),
-      rep("OJx0.5", 10), rep("OJx1.0", 10), rep("OJx2.0", 10)
-      )
-  
-  PlotDF$Legend   <- factor(PlotDF$Protocol , 
-                          levels = c("VCx0.5", "OJx0.5", "VCx1.0",
-                                     "OJx1.0", "VCx2.0", "OJx2.0"))
-
-  PlotDF$Supplement <- c(rep(experimentData$Supplement[1], 10),
-                    rep(experimentData$Supplement[2], 10),
-                    rep(experimentData$Supplement[3], 10),
-                    rep(experimentData$Supplement[4], 10),
-                    rep(experimentData$Supplement[5], 10),
-                    rep(experimentData$Supplement[6], 10)
-                    )
-  PlotDF$Dose <- c(rep(experimentData$Dose[1], 10),
-                    rep(experimentData$Dose[2], 10),
-                    rep(experimentData$Dose[3], 10),
-                    rep(experimentData$Dose[4], 10),
-                    rep(experimentData$Dose[5], 10),
-                    rep(experimentData$Dose[6], 10)
-                    )
-
-  PlotDF$Protocol <- factor(PlotDF$Protocol ,
-                            levels = c("VCx0.5", "VCx1.0", "VCx2.0",
-                                       "OJx0.5", "OJx1.0", "OJx2.0"))
-
-  boxPlotDots <- c("VCx0.5" = "blue", "VCx1.0" = "yellow",  "VCx2.0" = "red1",
-                   "OJx0.5" = "orange","OJx1.0" = "purple", "OJx2.0" = "green")
-  dotPlot <- geom_dotplot(aes(fill = Legend), color = "black",
-                 binaxis = 'y', stackdir = 'center', dotsize = 1.0)
-
   THEME <- 
     theme(plot.title   = element_text(size = 10),
           axis.title.x = element_text(size = 10),
@@ -215,29 +150,30 @@ GetSummaryData <- function(experimentData) {
           legend.key.size = unit(4, 'mm'),
           legend.position = "bottom"
         )
-    
 
-EXPERIMENT_TITLE    <- "Effect of Vitamin C on Tooth Growth"
-EXPERIMENT_CRED  <- paste0("Source: C. I. Bliss (1952). ",
+if (EXPERIMENT_DATA) {
+  PlotDF <- setImageData()
+  
+  print("PLOT DF TEST")
+  print(PlotDF)
+}
+
+EXPERIMENT_TITLE  <- "Effect of Vitamin C on Tooth Growth"
+EXPERIMENT_CRED   <- paste0("Source: C. I. Bliss (1952). ",
 "The Statistics of Bioassay. Academic Press.")
 
 ```
 
-## Image Analysis
-
 ### Protocol Image
 
 ```{r ProtocolImage, echo = TRUE, message = FALSE, results = 'hide'}
-ProtocolImage <- function()
+ProtocolImage <- function(PlotDF, boxPlotDots, dotPlot)
 {
   protocolImage <- NULL
   
   protocolImage <-
     ggplot(PlotDF, aes(x = Protocol, y = Length)) +
-    geom_boxplot() + 
-     dotPlot +
-# geom_dotplot(aes(fill = Legend), color = "black",
-#                binaxis = 'y', stackdir = 'center', dotsize = 1.0) +
+    geom_boxplot() + dotPlot +
     scale_fill_manual(values = boxPlotDots) +
     labs(title = EXPERIMENT_TITLE, subtitle = "Protocol vs. Tooth Length",
          caption = EXPERIMENT_CRED, x="Protocol", y="Tooth Length", fill = "Protocol") +
@@ -251,7 +187,7 @@ ProtocolImage <- function()
 ### Supplement Image
 
 ```{r SupplementAnalysis, echo = TRUE}
-SupplementImage <- function()
+SupplementImage <- function(PlotDF, boxPlotDots, dotPlot)
 {
   supplementImage <- NULL
   PlotDF$Supplement <- factor(PlotDF$Supplement, levels=c("VC", "OJ"))
@@ -272,7 +208,7 @@ SupplementImage <- function()
 ### Dose Image
 
 ```{r DoseAnalysis, echo = TRUE}
-DoseImage <- function()
+DoseImage <- function(PlotDF, boxPlotDots, dotPlot)
 {
   doseImage <- NULL
 
@@ -287,16 +223,16 @@ DoseImage <- function()
   return (doseImage)
 }
 
-if (BASIC_ANALYSIS) {
-  experimentData  <- ExperimentData()
+if (DOSE_IMAGE) {
+  experimentData  <- GetExperimentData()
 
   protocolImage    <- ProtocolImage(experimentData)
   supplementImage  <- SupplementImage(experimentData)
   doseImage        <- DoseAnalysis(experimentData)
 
-  # print("BASIC_ANALYSIS: PROTOCOL")
+  # print("DOSE_IMAGE: PROTOCOL")
   # print(PROTOCOL)
-  # print("BASIC_ANALYSIS: EXPERIMENT_DATA")
+  # print("DOSE_IMAGE: EXPERIMENT_DATA")
   # print(EXPERIMENT_DATA)
 }
 
@@ -304,93 +240,174 @@ if (BASIC_ANALYSIS) {
 
 ## Experiment Data Summary
 
-### Allocate Summary Dataset
+### Get Summary Data
 
-```{r AllocateSummaryDataset, echo = TRUE}
+```{r GetSummaryData, echo = TRUE}
 
-# SUMMARY_DATA <- list()
-# for (i in 1:N_COMPARISONS) {
-#   SUMMARY_DATA[[i]] <- c(ToothGrowth$len[((i - 1)*10 + 1) : (i * 10)])
-# }
-# SUMMARY_DATA[[7]] <- c(SUMMARY_DATA[[1]],  SUMMARY_DATA[[4]])
-# SUMMARY_DATA[[8]] <- c(SUMMARY_DATA[[2]],  SUMMARY_DATA[[5]])
-# SUMMARY_DATA[[9]] <- c(SUMMARY_DATA[[3]],  SUMMARY_DATA[[6]])
-# SUMMARY_DATA[[10]] <- c(SUMMARY_DATA[[1]],  SUMMARY_DATA[[2]],  
-#                         SUMMARY_DATA[[3]])
-# SUMMARY_DATA[[11]] <- c(SUMMARY_DATA[[4]],  SUMMARY_DATA[[5]],  
-#                         SUMMARY_DATA[[6]])
+GetSummaryData <- function(experimentData) {
+  summaryData <- data.frame(
+    SummaryCombinations = c("VCx0.5", "VCx1.0", "VCx2.0",
+                            "OJx0.5", "OJx1.0", "OJx2.0",
+                            "0.5", "1.0", "2.0", "VC", "OJ"))
+  summaryData$Length    <- NULL
+  
+  j <- 0
+  for (i in 1:N_COMPARISONS) {
+    if (i <= N_PROTOCOLS) {
+      summaryData$Length[i] <- list(ToothGrowth$len[((i - 1) * 10 + 1): (i*10)])
+    } else if (i <= N_PROTOCOLS + length(DOSES)) {
+      summaryData$Length[i] <-
+        list(c(unlist(experimentData$Length[i - N_PROTOCOLS]),
+               unlist(experimentData$Length[i + 3 - N_PROTOCOLS])))
+    } else {
+      summaryData$Length[i] <-
+        list(c(unlist(experimentData$Length[1 + (j * N_DOSES)]),
+               unlist(experimentData$Length[2 + (j * N_DOSES)]),
+               unlist(experimentData$Length[3 + (j * N_DOSES)])))
+      j <- j + 1
+    }
+  }
+# N_SUPPLEMENTS     <- length(SUPPLEMENTS)
+#            <- length(DOSES)
+
+  # for (i in 1:N_PROTOCOLS) {
+  #   summaryData$Length[i] <- list(ToothGrowth$len[((i - 1) * 10 + 1): (i*10)])
+  # }
+  # 
+  # 
+  # k <- N_PROTOCOLS + 1
+  # for (i in 1:(length(DOSES))) {
+  #   summaryData$Length[k] <-
+  #     list(c(unlist(experimentData$Length[i]),
+  #            unlist(experimentData$Length[i + 3])))
+  #   k <- k + 1
+  # }
+  # 
+  # k <- N_PROTOCOLS + 3 + 1  # 3 should be len(DOSES)!
+  # for (i in seq(1,N_PROTOCOLS, 3)){
+  #   summaryData$Length[k] <- 
+  #     list(c(unlist(experimentData$Length[i]),
+  #          unlist(experimentData$Length[i + 1]),
+  #          unlist(experimentData$Length[i + 2])))
+  # 
+  #   k <- k + 1
+  # }
+
+  return (summaryData)
+}
 
 ```
 
-### Comparison Data Summary Table
+### Summary Data Table
 
 ```{r SummaryDataTable, echo = TRUE}
-# SummaryDataTable <- function(EXPERIMENT_DATA)
-SummaryDataTable <- function()
+SummaryDataTable <- function(summaryData)
 {
-  dataSummary <- data.frame(Protocol = c(), Variance = c(), Min = c(), Qu_1 = c(), 
+  summarizeData <- data.frame(Protocol = c(), Variance = c(), Min = c(), Qu_1 = c(), 
                             Mean = c(), Qu_3 = c(), Max = c(), Med = c())
+  summaryTable <- NULL
+
+  # print(paste0("N_COMPARISONS ", N_COMPARISONS))
+  # print("summaryData")
+  # print(summaryData)
 
   # extract data from summary results
-  for (i in 1:N_PROTOCOLS) {  
-    summaryDataTable <- summary(SUMMARY_DATA[[i]])
-    dataSummary <- 
-      rbind(dataSummary, c(PROTOCOL_NAME[i], reduceDigits(summaryDataTable[1], 3),
-                           reduceDigits(summaryDataTable[2], 3), reduceDigits(summaryDataTable[4], 3),
-                           reduceDigits(var(SUMMARY_DATA[[i]]), 3), reduceDigits(summaryDataTable[5], 3),
-                           reduceDigits(summaryDataTable[6], 3), reduceDigits(summaryDataTable[3], 3)))
+  for (i in 1:N_COMPARISONS) {
+    summary <- summary(summaryData$Length[[i]])
+    summarizeData <-
+      rbind(summarizeData, 
+            c(summaryData$SummaryCombinations[i],
+              reduceDigits(summary[1], 3),
+              reduceDigits(summary[2], 3),
+              reduceDigits(summary[4], 3),
+              reduceDigits(var(summaryData$Length[[i]]), 3),
+              reduceDigits(summary[5], 3),
+              reduceDigits(summary[6], 3),
+              reduceDigits(summary[3], 3)))
   }
-  colnames(dataSummary) <- c("Protocol", "Min", "Qu_1", "Mean", "Var", "Qu_3", "Max", "Med")
+
+  colnames(summarizeData) <- c("Protocol", "Min", "Qu_1", "Mean", "Var", "Qu_3", "Max", "Med")
 
   # create summary table
-  dataSummaryTable <- knitr::kable(dataSummary, "latex", digits = c(3, 3, 3, 3, 3, 3, 3, 3),
-                                    caption = "dataSummaryTable ", align = "lrrrrrrr",
+  summaryTable <- knitr::kable(summarizeData, "latex", digits = c(3, 3, 3, 3, 3, 3, 3, 3),
+                                    caption = "summaryTable ", align = "lrrrrrrr",
                                     row.names = TRUE) %>%
     kable_styling(bootstrap_options = c("striped", "hover"), full_width = F, font_size = 6,
                   latex_options = "hold_position") %>%
     column_spec(column=1, width="0.3cm") %>%
-    column_spec(column=2, width="1.2cm") %>%
-    column_spec(column=3, width="0.7cm") %>%
-    column_spec(column=4, width="0.5cm") %>%
+    column_spec(column=2, width="0.9cm") %>%
+    column_spec(column=3, width="0.6cm") %>%
+    column_spec(column=4, width="0.6cm") %>%
     column_spec(column=5, width="0.7cm") %>%
     column_spec(column=6, width="0.7cm") %>%
     column_spec(column=7, width="0.8cm") %>%
-    column_spec(column=8, width="0.8cm") %>%
+    column_spec(column=8, width="0.5cm") %>%
     column_spec(column=9, width="0.5cm") %>%
     kable_classic_2()
   
-  return(dataSummaryTable)
+  return(summaryTable)
 }
 
-if (BASIC_STATISTICS) {
-  EXPERIMENT_DATA    <- ExperimentData()
-  dataSummaryTable  <- SummaryDataTable()
+if (SUMMARY_TABLE) {
+  experimentData   <- GetExperimentData()
+  PlotDF
 
-  print("BASIC_STATISTICS: dataSummary")
-  dataSummaryTable
+  summaryData      <- GetSummaryData(experimentData)
+  summaryTable     <- SummaryDataTable(summaryData)
+
+  print("SUMMARY_TABLE: summarizeData")
+  summaryTable
 }
 
 ```
 
 ## Confidence Test
 
-### t-test Table Constants
+### t-test Confidence Table
 
-```{r TTestTableConstants, echo = TRUE}
+<!-- # sample estimates: This tells us the sample mean of each group. In this case, the sample mean of group 1 was 11.667 and the sample mean of group 2 was 14.75. -->
+<!-- #  -->
+<!-- # The two hypotheses for this particular two sample t-test are as follows: -->
+<!-- #  -->
+<!-- # H0: mu1 == mu2 (the two population means are equal) -->
+<!-- #  -->
+<!-- # HA: mu1 <> mu2 (the two population means are not equal) -->
+<!-- #  -->
+<!-- # Because the p-value of our test (.01884) is less than alpha = 0.05, we reject the null hypothesis of the test. This means we have sufficient evidence to say that the mean height of plants between the two populations is different. -->
+
+
+<!-- A random sample of 50 students at one school was obtained and each selected student was given an IQ test. These data were used to construct a 95% confidence interval of [96.656, 106.422]. -->
+
+<!-- Research question: Is there evidence that the mean IQ score at this school is different from the known national average of 100? -->
+
+<!-- The 95% confidence interval contains 100. This means that 100 is a reasonable estimate for the mean IQ score of students at this school. There is not enough evidence that the mean at this school is different from 100. -->
+
+
+```{r ConfidenceTests, echo = TRUE}
+
+#  ______                                    __________________________________
+# |      | 1, 2 | 1, 3 | 1, 4 | 1, 5 | 1, 6 |                                  |
+# |      ```````| 2, 3 | 2, 4 | 2, 5 | 2, 6 |       i < 7 j > 6                |
+# |             ```````| 3, 4 | 3, 5 | 3, 6 |                                  |
+# |   j <= i           ```````| 4, 5 | 4, 6 |                                  |
+# |___________________________```````| 5, 6 |__________________________________|
+#  ________________________________________________               _____________
+# |                                                | 7, 8 | 7, 9 | i > 6 j > 9 | 
+# |            i > 5 j < 7                         |------| 8, 9 |    i < 10   |
+# |                                                |      |------|_____________|
+# |                                                |   j <= i    |------|10,11 
+# |________________________________________________|                    | i > 10 j > 11
+
+
 
 T_TEST_COLUMNS  <- c("i", "j",  "data.name", "alternative", "statistic", 
                    "df", "p", "conf.low", "conf.high", 
                    "estimate.x", "estimate.y", "null.value", 
                    "stderr", "method")
 
-```
-
-### t-test Confidence Table
-
-```{r ConfidenceTests, echo = TRUE}
-
-ConfidenceTests <- function(EXPERIMENT_DATA, alternative)
+ConfidenceTests <- function(summaryData, alternative)
 {
+  toothTTable <- NULL
   tTestData  <- data.frame(i = integer(), j = integer(), data.name  = character(), 
                             alternative  = character(), 
                             statistic = double(), parameter = double(), 
@@ -398,38 +415,41 @@ ConfidenceTests <- function(EXPERIMENT_DATA, alternative)
                             estimate = double(), null.value = double(),
                             stderr = double(), method  = character())
 
-  for (i in 1:N_PROTOCOLS) {
-    for (j in (i + 1):N_PROTOCOLS) {
-      if (i <= N_COMPARISONS & j <= N_COMPARISONS) {
-        t <- t.test(x = SUMMARY_DATA[[i]], y = SUMMARY_DATA[[j]],
+  dummy  <- t.test(x = summaryData$Length[[1]], y = summaryData$Length[[1]],
                     alternative = c(alternative), paired = FALSE,
                     var.equal = FALSE)
-        # tableStyle <- kable_styling(bootstrap_options = c("striped", "hover"), full_width = F, font_size = 6)
+  d12  <- t.test(x = summaryData$Length[[1]], y = summaryData$Length[[2]],
+                    alternative = c(alternative), paired = FALSE,
+                    var.equal = FALSE)
 
-      } else if ((i > N_COMPARISONS & i <= (N_COMPARISONS + 3))  &
-                 (j > N_COMPARISONS & j <= (N_COMPARISONS + 3))) {
-        t <- t.test(x = SUMMARY_DATA[[i]], y = SUMMARY_DATA[[j]],
-                    alternative = c(alternative), paired = FALSE,
-                    var.equal = FALSE)
-      } else if ((i > (N_COMPARISONS + 3) & i < (N_COMPARISONS + 5))  &
-                 (j > (N_COMPARISONS + 3) & j < (N_COMPARISONS + 6))) {
-        t <- t.test(x = SUMMARY_DATA[[i]], y = SUMMARY_DATA[[j]],
-                    alternative = c(alternative), paired = FALSE,
-                    var.equal = FALSE)
-      } else {
-        t <- t.test(x = SUMMARY_DATA[[1]], y = SUMMARY_DATA[[1]],
-                    alternative = c(alternative), paired = FALSE, 
-                    var.equal = FALSE)
+# H0: mu1 == mu2 (the two population means are equal)
+#
+# HA: mu1 <> mu2 (the two population means are not equal)
+ # print(d12)
+  
+  for (i in 1:(N_COMPARISONS - 1)) {
+    for (j in (i + 1):(N_COMPARISONS - 1)) {
+      if ((i > j) | (i < 7 & j > 6) | (i > 5 & j < 7) | 
+          (i > 6 & i < 10 & j > 9) | (i == 10 & j == 10)) {
+        t <- dummy
         t$data.name = "NONE"
+      } else {
+        t <- t.test(x = summaryData$Length[[i]], y = summaryData$Length[[j]],
+                    alternative = c(alternative), conf.level = 0.95, paired = FALSE,
+                    var.equal = FALSE)
       }
-      
+
       if (t$data.name != "NONE") {
-        tTestData <- rbind(tTestData, c(i, j, 
-                          paste0(PROTOCOL_NAME[i], "/", PROTOCOL_NAME[j]),
-                          t$alternative, trunc(t$statistic*10^3)/10^3,  trunc(t$parameter*10^3)/10^3, 
-                          sprintf("%.5e", t$p.value), trunc(t$conf.int[1]*10^3)/10^3, trunc(t$conf.int[2]*10^3)/10^3,
-                          trunc(t$estimate[1]*10^3)/10^3, trunc(t$estimate[1]*10^3)/10^3, t$null.value,
-                          trunc(t$stderr*10^3)/10^3, t$method))
+        tTestData <-
+          rbind(tTestData,
+                c(i, j,
+                  paste0(summaryData$SummaryCombinations[i],
+                         "/",summaryData$SummaryCombinations[j]),
+                  t$alternative, reduceDigits(t$statistic, 3),
+                  reduceDigits(t$parameter, 3), sprintf("%.5e", t$p.value),
+                  reduceDigits(t$conf.int[1], 3),reduceDigits(t$conf.int[2], 3),
+                  reduceDigits(t$estimate[1], 3),reduceDigits(t$estimate[2], 3),
+                  t$null.value,reduceDigits(t$stderr, 3), t$method))
       }
     }
   }
@@ -437,15 +457,21 @@ ConfidenceTests <- function(EXPERIMENT_DATA, alternative)
   colnames(tTestData) <- T_TEST_COLUMNS
 
   tTestData <- tTestData %>%
+    mutate_at(c('statistic', 'df', 'p', 'conf.low', 'conf.high', 
+                'estimate.x', 'estimate.y', 'null.value',
+                'stderr'), as.numeric)
+
+  tTestData <- tTestData %>%
     mutate (
       CI = paste0("(", conf.low, ", ", conf.high,")"),
-      rej = ifelse(0 < conf.low & 0 > conf.high, "reject", "accept")
+      rejt = ifelse(p < 0.05, "reject", "accept"),
+      rejCI = ifelse(sign(conf.low) == sign(conf.high), "reject", "accept")
       ) %>%
-   select(data.name, statistic, df, p, CI, rej)
-  
-   colnames(tTestData) <- c('Comparison','t-statistic', 'df', 'p', 'CI', 'Result')
+   select(data.name, statistic, df, p, CI, rejt)
+
+   colnames(tTestData) <- c('Comparison','t-statistic', 'df', 'p', 'CI', 'rejt')
    toothTTable <- knitr::kable(tTestData, "latex",
-                                    caption = "dataSummaryTable ", align = "crrrrr",
+                                    caption = "summaryTable ", align = "crrrrr",
                                     row.names = TRUE) %>%
     kable_styling(bootstrap_options = c("striped", "hover"), full_width = F, font_size = 6) %>%
     column_spec(column=1, width="0.3cm") %>%
@@ -461,7 +487,7 @@ ConfidenceTests <- function(EXPERIMENT_DATA, alternative)
 }
 
 if (CONFIDENCE_TESTS) {
-  EXPERIMENT_DATA  <- ExperimentData()
+  EXPERIMENT_DATA  <- GetExperimentData()
   # alternative <- "two.sided"
   tTestTable    <- ConfidenceTests(EXPERIMENT_DATA, "two.sided")
   print("CONFIDENCE_TESTS: two.sided")
@@ -484,21 +510,26 @@ if (CONFIDENCE_TESTS) {
 if (EXECUTE) 
 {
   experimentData   <- GetExperimentData()
+  PlotDF           <- setImageData(experimentData)
+  boxPlotDots <- c("VCx0.5" = "blue", "VCx1.0" = "yellow",  "VCx2.0" = "red1",
+                   "OJx0.5" = "orange","OJx1.0" = "purple", "OJx2.0" = "green")
+  dotPlot <- geom_dotplot(aes(fill = Legend), color = "black",
+                 binaxis = 'y', stackdir = 'center', dotsize = 1.5)
 
-  protocolImage    <- ProtocolImage()
-  supplementImage  <- SupplementImage()
-  doseImage        <- DoseImage()
+  protocolImage    <- ProtocolImage(PlotDF, boxPlotDots, dotPlot)
+  supplementImage  <- SupplementImage(PlotDF, boxPlotDots, dotPlot)
+  doseImage        <- DoseImage(PlotDF, boxPlotDots, dotPlot)
 
-  
   summaryData      <- GetSummaryData(experimentData)
-  print(summaryData)
-
-  # dataSummaryTable  <- SummaryDataTable()
-  # 
-  # t2Table         <- ConfidenceTests(EXPERIMENT_DATA, "two.sided")
-  # t1LowTable      <- ConfidenceTests(EXPERIMENT_DATA, "less")
-  # t1HighTestTable <- ConfidenceTests(EXPERIMENT_DATA, "greater")
+  summaryTable     <- SummaryDataTable(summaryData)
   
+  t2Table         <- NULL
+  t1LowTable      <- NULL
+  t1HighTestTable <- NULL
+
+  t2Table         <- ConfidenceTests(summaryData, "two.sided")
+  t1LowTable      <- ConfidenceTests(summaryData, "less")
+  t1HighTestTable <- ConfidenceTests(summaryData, "greater")
 }
 
 ```
@@ -508,14 +539,17 @@ if (EXECUTE)
 \newpage
 # Overview
 
-This project uses basic statistical techniques to make an initial assessment of the \textit{ToothGrowth} data [@ToothGrowth]. The project code generates four data tables and three images to show the basic statistical elements and to compare the impact of six treatments on tooth growth. The problem instruction is to "...analyze the ToothGrowth data in the R datasets package" but it makes no reference to the what we are supposed to analyze, i.e., which treatment promotes or inhibits tooth growth, or what is the overall effect, so the project report will include an analysis for each 
+This project uses basic statistical techniques to make an initial assessment of the \textit{ToothGrowth} data [@ToothGrowth].
+
 # Project Definitions
 
-## Constants
+## Data 
 
-### Constants Derived from Source Data
+### Restructuring Data
 
-The source data (ToothGrowth dataset) is defined by three variables \textit{len}, \textit{supp}, and \textit{dose}. The data is stored as a dataframe with 60 rows and three columns, one for each variable.
+The source data (ToothGrowth data set) is a data frame consisting of sixty rows and three columns \textit{len}, \textit{supp}, and \textit{dose}. Each row is a single measurement of tooth length depended on the supplement used, Vitamin C solution (VC) and Orange Juice (OJ). Each supplement is sub-divided into three sections of doses and each combination of supplement and dose (VCx0.5, VCx1.0, VCx2.0, OJx0.5, OJx1.0, and OJx2.0) has ten measurements. Since the 
+
+with 60 rows and three columns, each column stores the values of one of the variables. The 
 
 supp | dose | len
 -----|------|-------------------------------------------------------------
@@ -583,9 +617,9 @@ The code to do this is found in \textbf{Appendix I, Code Block 7: Allocate Summa
 ### Tooth Summary Statistics Table
 
 The function \textbf{SummaryDataTable} computes the summary data for each element of the \textit{SUMMARY\_DATA} list.
-The R summary function computes the minimum, first quantile, mean, third quantile, min, max and median. Each of these values are extracted from the result of the summary function and stored as a row in the \textit{dataSummary} dataframe. In addition the summary data, the variance of each element of the \textit{SUMMARY\_DATA} list is also stored in each row.
+The R summary function computes the minimum, first quantile, mean, third quantile, min, max and median. Each of these values are extracted from the result of the summary function and stored as a row in the \textit{summarizeData} dataframe. In addition the summary data, the variance of each element of the \textit{SUMMARY\_DATA} list is also stored in each row.
 
-Once the dataSummary data frame is filled, the data is passed to a  \textit{kable} table.
+Once the summarizeData data frame is filled, the data is passed to a  \textit{kable} table.
 
 ### Protocol Comparisons
 
@@ -611,7 +645,7 @@ The data computed by the R summary function is collected for each protocol, the 
 
 
 ```{r echo = FALSE}
-# dataSummaryTable
+summaryTable
 ```
 
 
@@ -621,24 +655,24 @@ Figure 1 shows the $supplement \times dose$ combinations.
 protocolImage
 ```
 
-```{r echo = FALSE, message = FALSE, fig.align = "center", fig.width = 5, fig.height = 3, fig.cap = "As with figure 1, the plot provides a visual representation of ToothGrowth dose comparisons."}
+```{r echo = FALSE, message = FALSE, fig.align = "center", fig.width = 4, fig.height = 2.5, fig.cap = "As with figure 1, the plot provides a visual representation of ToothGrowth dose comparisons."}
 supplementImage
 ```
 
-```{r echo = FALSE, message = FALSE, fig.align = "center", fig.width = 5, fig.height = 3, fig.cap = "As with figure 1, the plot provides a visual representation of ToothGrowth supplement comparisons."}
+```{r echo = FALSE, message = FALSE, fig.align = "center", fig.width = 4, fig.height = 2.5, fig.cap = "As with figure 1, the plot provides a visual representation of ToothGrowth supplement comparisons."}
 doseImage
 ```
 
 ```{r echo = FALSE}
-# t2Table
+t2Table
 ```
 
 ```{r echo = FALSE}
-# t1LowTable
+t1LowTable
 ```
 
 ```{r echo = FALSE}
-# t1HighTestTable
+t1HighTestTable
 ```
 \twocolumn
 
@@ -756,7 +790,6 @@ EXPERIMENT_CRED  <- paste0("Source: C. I. Bliss (1952). ",
 ```{r _ProtocolImage, echo = TRUE, eval = FALSE}
 ProtocolImage <- function(EXPERIMENT_DATA)
 {
-
   toothPlaques <- 
     ggplot(EXPERIMENT_DATA, aes(x = Name, y = Length)) +
     geom_boxplot() +
@@ -840,24 +873,24 @@ SUMMARY_DATA[[11]] <- c(SUMMARY_DATA[[4]],  SUMMARY_DATA[[5]], # OJ
 ```{r _SummaryDataTable, echo = TRUE, eval = FALSE}
 SummaryDataTable <- function(EXPERIMENT_DATA)
 {
-  dataSummary <- data.frame(Variance = c(), Min = c(), Qu_1 = c(), 
+  summarizeData <- data.frame(Variance = c(), Min = c(), Qu_1 = c(), 
                             Med = c(), Mean = c(), Qu_3 = c(), Max = c())
 ## ######################################################################
 
   # extract data from summary results
   for (i in 1:N_PROTOCOLS) {  
     summaryDataTable <- summary(SUMMARY_DATA[[i]])
-    dataSummary <- 
-      rbind(dataSummary, c(var(SUMMARY_DATA[[i]]), summaryDataTable[1], 
+    summarizeData <- 
+      rbind(summarizeData, c(var(SUMMARY_DATA[[i]]), summaryDataTable[1], 
                            summaryDataTable[2], summaryDataTable[3], 
                            summaryDataTable[4], summaryDataTable[5], 
                            summaryDataTable[6]))
   }
-  colnames(dataSummary) <- c("Var", "Min", "Qu_1", "Med", "Mean", "Qu_3", "Max")
+  colnames(summarizeData) <- c("Var", "Min", "Qu_1", "Med", "Mean", "Qu_3", "Max")
 
   # create summary table
-  dataSummaryTable <- knitr::kable(dataSummary, "latex", digits = c(3, 3, 3, 3, 3, 3),
-                                    caption = "dataSummaryTable ", align = "rrrrrrr",
+  summaryTable <- knitr::kable(summarizeData, "latex", digits = c(3, 3, 3, 3, 3, 3),
+                                    caption = "summaryTable ", align = "rrrrrrr",
                                     row.names = TRUE) %>%
     kable_styling(bootstrap_options = c("striped", "hover"), full_width = F, font_size = 8) %>%
     column_spec(column=1, width="0.3cm") %>%
@@ -870,7 +903,7 @@ SummaryDataTable <- function(EXPERIMENT_DATA)
     column_spec(column=8, width="0.5cm") %>%
     kable_classic_2()
   
-  return(dataSummaryTable)
+  return(summaryTable)
 }
 
 ```
@@ -941,7 +974,22 @@ ConfidenceTests <- function(EXPERIMENT_DATA, alternative)
                           t$p.value,    t$conf.int, 
                           t$estimate,   t$null.value,
                           t$stderr, t$method))
-      }
+        # t$statistic <- trunc(t$statistic*10^3)/10^3
+        # t$parameter <- trunc(t$parameter*10^3)/10^3
+        # t$p.value <- sprintf("%.5e", t$p.value)
+        # # t$p.value <- trunc(t$p.value*10^3)/10^3
+        # t$conf.int[1] <- trunc(t$conf.int[1]*10^3)/10^3
+        # t$conf.int[2] <- trunc(t$conf.int[2]*10^3)/10^3
+        # t$estimate[1] <- trunc(t$estimate[1]*10^3)/10^3
+        # t$estimate[2] <- trunc(t$estimate[2]*10^3)/10^3
+        # t$stderr <- trunc(t$stderr*10^3)/10^3
+        # tTestData <- rbind(tTestData, c(i, j, 
+        #                   paste0(PROTOCOL_NAME[i], "/", PROTOCOL_NAME[j]),
+        #                   t$alternative, t$statistic,  t$parameter, 
+        #                   t$p.value,    t$conf.int, 
+        #                   t$estimate,   t$null.value,
+        #                   t$stderr, t$method))
+     }
     }
   }
 
@@ -957,7 +1005,7 @@ ConfidenceTests <- function(EXPERIMENT_DATA, alternative)
    colnames(tTestData) <- c('Comparison','t-statistic', 'df', 'p', 'CI', 'Result')
    
    toothTTable <- knitr::kable(tTestData, "latex",
-                                    caption = "dataSummaryTable ", align = "crrrrr",
+                                    caption = "summaryTable ", align = "crrrrr",
                                     row.names = TRUE) %>%
     kable_styling(bootstrap_options = c("striped", "hover"), full_width = F, font_size = 8) %>%
     column_spec(column=1, width="0.3cm") %>%
@@ -986,7 +1034,7 @@ if (EXECUTE)
   supplementPlaques <- SupplementAnalysis(EXPERIMENT_DATA)
   dosePlaques       <- DoseAnalysis(EXPERIMENT_DATA)
   
-  dataSummaryTable  <- SummaryDataTable(EXPERIMENT_DATA)
+  summaryTable  <- SummaryDataTable(EXPERIMENT_DATA)
 
   t2Table         <- ConfidenceTests(EXPERIMENT_DATA, "two.sided")
   t1LowTable      <- ConfidenceTests(EXPERIMENT_DATA, "less")
